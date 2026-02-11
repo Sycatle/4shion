@@ -67,6 +67,12 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductVariant::class);
     }
 
+    /** @return HasMany<Review, $this> */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     /**
      * @param  Builder<Product>  $query
      * @return Builder<Product>

@@ -140,15 +140,11 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'users' => [
-            //     'filterableAttributes' => ['id', 'name', 'email'],
-            //     'embedders' => [
-            //         'default' => [
-            //             'source' => 'userProvided',
-            //             'dimensions' => 1536,
-            //         ],
-            //     ],
-            // ],
+            'products' => [
+                'searchableAttributes' => ['name', 'category', 'description'],
+                'filterableAttributes' => ['is_active'],
+                'sortableAttributes' => ['base_price', 'created_at'],
+            ],
         ],
         'model-settings' => [
             // User::class => [

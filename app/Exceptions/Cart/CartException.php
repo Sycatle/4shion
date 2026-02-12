@@ -16,6 +16,18 @@ class CartException extends RuntimeException
             : 'Cet article est actuellement épuisé.');
     }
 
+    public static function emptyCart(): self
+    {
+        return new self('Votre panier est vide.');
+    }
+
+    public static function unavailable(string $name, int $available): self
+    {
+        return new self($available > 0
+            ? "« {$name} » : seulement {$available} article(s) disponible(s)."
+            : "« {$name} » n'est plus disponible.");
+    }
+
     public static function invalidCoupon(string $reason = 'Ce code promo est invalide ou expiré.'): self
     {
         return new self($reason);

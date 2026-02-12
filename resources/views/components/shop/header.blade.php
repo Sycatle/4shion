@@ -34,6 +34,7 @@
             @else
                 <a href="{{ route('login') }}" wire:navigate class="text-xs font-medium uppercase tracking-[0.14em] hover:text-muted">Connexion</a>
             @endauth
+            <livewire:shop.cart-counter />
         </div>
     </div>
 

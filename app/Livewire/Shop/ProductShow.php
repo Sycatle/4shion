@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Shop;
 
+use App\Cart\CartManager;
+use App\Exceptions\Cart\CartException;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
@@ -29,6 +31,10 @@ class ProductShow extends Component
 
     public ?string $size = null;
 
+    public ?string $error = null;
+
+    public bool $added = false;
+
     public function mount(Product $product): void
     {
         abort_unless($product->is_active, 404);
@@ -52,6 +58,29 @@ class ProductShow extends Component
         if ($this->sizesForColor->get($size)?->isInStock()) {
             $this->size = $size;
         }
+    }
+
+    public function addToCart(CartManager $cart): void
+    {
+        $this->error = null;
+        $this->added = false;
+
+        if ($this->selectedVariant === null) {
+            $this->error = 'Veuillez choisir une taille.';
+
+            return;
+        }
+
+        try {
+            $cart->add($this->selectedVariant);
+        } catch (CartException $e) {
+            $this->error = $e->getMessage();
+
+            return;
+        }
+
+        $this->added = true;
+        $this->dispatch('cart-updated');
     }
 
     /** @return Collection<int, ProductVariant> */

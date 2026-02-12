@@ -76,6 +76,16 @@
                     <p class="mt-3 text-xs text-muted">Plus que {{ $this->selectedVariant->stock }} en stock.</p>
                 @endif
             </div>
+
+            <div class="mt-8 space-y-3">
+                <button type="button" wire:click="addToCart" wire:loading.attr="disabled" class="btn-primary w-full">Ajouter au panier</button>
+                @if ($error)
+                    <p class="text-sm text-red-700" role="alert">{{ $error }}</p>
+                @endif
+                @if ($added)
+                    <p class="text-sm" role="status">Ajouté au panier. <a href="{{ route('cart') }}" wire:navigate class="underline underline-offset-4">Voir le panier</a></p>
+                @endif
+            </div>
         </div>
     </div>
 

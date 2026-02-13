@@ -39,6 +39,10 @@
                     {{ $order->shipping_address['postal_code'] }} {{ $order->shipping_address['city'] }}
                 </address>
             </div>
+
+            @if ($order->status->isPaid())
+                <a href="{{ route('account.orders.invoice', $order) }}" class="btn-outline w-full">Télécharger la facture</a>
+            @endif
         </aside>
     </div>
 </x-account.shell>

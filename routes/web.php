@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\InvoiceController;
 use App\Http\Controllers\Shop\CheckoutCancelController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Livewire\Account\AddressBook;
@@ -27,6 +28,7 @@ Route::middleware('auth')->prefix('commande')->group(function () {
 Route::middleware('auth')->prefix('compte')->group(function () {
     Route::get('commandes', OrderList::class)->name('account.orders');
     Route::get('commandes/{order:number}', OrderShow::class)->name('account.orders.show');
+    Route::get('commandes/{order:number}/facture', InvoiceController::class)->name('account.orders.invoice');
     Route::get('adresses', AddressBook::class)->name('account.addresses');
     Route::view('profil', 'profile')->name('profile');
 });

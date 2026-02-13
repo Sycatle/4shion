@@ -59,6 +59,16 @@ class Order extends Model
     }
 
     /**
+     * VAT contained in the (tax-inclusive) total, in cents.
+     */
+    public function vatTotal(): int
+    {
+        $excludingTax = (int) round($this->total / (1 + config('shop.vat_rate') / 100));
+
+        return $this->total - $excludingTax;
+    }
+
+    /**
      * Build a human-readable, sortable order number, e.g. 4SH-2026-000042.
      */
     public static function numberFor(int $id): string

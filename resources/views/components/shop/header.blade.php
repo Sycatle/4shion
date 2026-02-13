@@ -28,9 +28,13 @@
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4" stroke-linecap="round"/></svg>
             </a>
             @auth
-                <a href="{{ route('profile') }}" wire:navigate aria-label="Mon compte">
+                <a href="{{ route('account.orders') }}" wire:navigate aria-label="Mon compte">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke-linecap="round"/></svg>
                 </a>
+                <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
+                    @csrf
+                    <button type="submit" class="text-xs font-medium uppercase tracking-[0.14em] hover:text-muted">Déconnexion</button>
+                </form>
             @else
                 <a href="{{ route('login') }}" wire:navigate class="text-xs font-medium uppercase tracking-[0.14em] hover:text-muted">Connexion</a>
             @endauth

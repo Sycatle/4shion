@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\Shop\CheckoutCancelController;
 use App\Http\Controllers\Shop\HomeController;
+use App\Livewire\Account\AddressBook;
+use App\Livewire\Account\OrderList;
+use App\Livewire\Account\OrderShow;
+use App\Livewire\Actions\Logout;
 use App\Livewire\Shop\CartPage;
 use App\Livewire\Shop\CheckoutPage;
 use App\Livewire\Shop\CheckoutSuccess;
@@ -20,12 +24,19 @@ Route::middleware('auth')->prefix('commande')->group(function () {
     Route::get('annulee/{order:number}', CheckoutCancelController::class)->name('checkout.cancel');
 });
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware('auth')->prefix('compte')->group(function () {
+    Route::get('commandes', OrderList::class)->name('account.orders');
+    Route::get('commandes/{order:number}', OrderShow::class)->name('account.orders.show');
+    Route::get('adresses', AddressBook::class)->name('account.addresses');
+    Route::view('profil', 'profile')->name('profile');
+});
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
+Route::redirect('dashboard', '/compte/commandes')->name('dashboard');
+
+Route::post('deconnexion', function (Logout $logout) {
+    $logout();
+
+    return redirect()->route('home');
+})->middleware('auth')->name('logout');
 
 require __DIR__.'/auth.php';

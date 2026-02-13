@@ -11,6 +11,8 @@
         </div>
         <div class="space-y-3 text-sm">
             <p class="eyebrow">Mon compte</p>
+            <a href="{{ route('account.orders') }}" wire:navigate class="block hover:text-muted">Mes commandes</a>
+            <a href="{{ route('account.addresses') }}" wire:navigate class="block hover:text-muted">Mes adresses</a>
             <a href="{{ route('profile') }}" wire:navigate class="block hover:text-muted">Mon profil</a>
         </div>
         <div class="space-y-3 text-sm">

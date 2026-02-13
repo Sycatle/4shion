@@ -43,30 +43,22 @@ test('users can not authenticate with invalid password', function () {
     $this->assertGuest();
 });
 
-test('navigation menu can be rendered', function () {
-    $user = User::factory()->create();
+test('the account menu is rendered for authenticated users', function () {
+    $this->actingAs(User::factory()->create());
 
-    $this->actingAs($user);
-
-    $response = $this->get('/dashboard');
-
-    $response
+    $this->get(route('home'))
         ->assertOk()
-        ->assertSeeVolt('layout.navigation');
+        ->assertSee('Déconnexion');
 });
 
 test('users can logout', function () {
-    $user = User::factory()->create();
+    $this->actingAs(User::factory()->create());
 
-    $this->actingAs($user);
-
-    $component = Volt::test('layout.navigation');
-
-    $component->call('logout');
-
-    $component
-        ->assertHasNoErrors()
-        ->assertRedirect('/');
+    $this->post(route('logout'))->assertRedirect(route('home'));
 
     $this->assertGuest();
+});
+
+test('guests cannot logout', function () {
+    $this->post(route('logout'))->assertRedirect(route('login'));
 });

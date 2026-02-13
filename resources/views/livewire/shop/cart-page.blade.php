@@ -1,6 +1,10 @@
 <div class="shell py-10">
     <h1 class="text-3xl sm:text-4xl">Votre panier</h1>
 
+    @if (session('status'))
+        <p class="mt-6 border border-ink bg-white px-4 py-3 text-sm" role="status">{{ session('status') }}</p>
+    @endif
+
     @if ($items->isEmpty())
         <div class="mt-10 border border-line py-20 text-center">
             <p class="text-lg font-semibold">Votre panier est vide.</p>
@@ -72,6 +76,8 @@
                     <div class="flex justify-between"><dt class="text-muted">Livraison</dt><dd>{{ $totals->shipping === 0 ? 'Offerte' : \App\Support\Money::format($totals->shipping) }}</dd></div>
                     <div class="flex justify-between border-t border-line pt-4 text-base font-semibold"><dt>Total</dt><dd>{{ \App\Support\Money::format($totals->total) }}</dd></div>
                 </dl>
+
+                <a href="{{ route('checkout') }}" wire:navigate class="btn-primary w-full">Passer la commande</a>
             </aside>
         </div>
     @endif

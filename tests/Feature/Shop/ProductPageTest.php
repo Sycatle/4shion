@@ -1,9 +1,13 @@
 <?php
 
+use App\Enums\OrderStatus;
 use App\Livewire\Shop\ProductShow;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
+use App\Models\User;
 use Livewire\Livewire;
 
 it('shows an active product with its price', function () {
@@ -51,4 +55,72 @@ it('only shows approved reviews', function () {
     $this->get(route('shop.show', $product))
         ->assertSee('Avis publié')
         ->assertDontSee('Avis en attente');
+});
+
+function purchase(User $user, Product $product, OrderStatus $status = OrderStatus::Paid): void
+{
+    $variant = ProductVariant::factory()->for($product)->create();
+    $order = Order::factory()->for($user)->create(['status' => $status]);
+    OrderItem::create([
+        'order_id' => $order->id, 'product_variant_id' => $variant->id, 'product_name' => $product->name,
+        'variant_label' => $variant->label(), 'sku' => $variant->sku, 'unit_price' => 1000, 'quantity' => 1, 'total' => 1000,
+    ]);
+}
+
+it('lets a customer who bought the product leave a review pending moderation', function () {
+    $user = User::factory()->create();
+    $product = Product::factory()->create();
+    purchase($user, $product);
+
+    Livewire::actingAs($user)->test(ProductShow::class, ['product' => $product])
+        ->assertSee('Donner mon avis')
+        ->set('rating', 4)
+        ->set('reviewBody', 'Très belle matière, coupe parfaite.')
+        ->call('submitReview')
+        ->assertHasNoErrors()
+        ->assertSet('reviewSubmitted', true);
+
+    $review = $product->reviews()->sole();
+    expect($review->rating)->toBe(4)
+        ->and($review->approved_at)->toBeNull()
+        ->and($review->user_id)->toBe($user->id);
+});
+
+it('refuses reviews from customers who did not buy the product', function () {
+    $product = Product::factory()->create();
+
+    Livewire::actingAs(User::factory()->create())->test(ProductShow::class, ['product' => $product])
+        ->assertDontSee('Donner mon avis')
+        ->set('reviewBody', 'Un avis sans achat.')
+        ->call('submitReview')
+        ->assertForbidden();
+});
+
+it('refuses reviews for unpaid orders', function () {
+    $user = User::factory()->create();
+    $product = Product::factory()->create();
+    purchase($user, $product, OrderStatus::Pending);
+
+    expect($user->can('review', $product))->toBeFalse();
+});
+
+it('allows a single review per product', function () {
+    $user = User::factory()->create();
+    $product = Product::factory()->create();
+    purchase($user, $product);
+    Review::factory()->for($product)->for($user)->create();
+
+    expect($user->can('review', $product))->toBeFalse();
+});
+
+it('validates the review content', function () {
+    $user = User::factory()->create();
+    $product = Product::factory()->create();
+    purchase($user, $product);
+
+    Livewire::actingAs($user)->test(ProductShow::class, ['product' => $product])
+        ->set('reviewBody', 'court')
+        ->set('rating', 9)
+        ->call('submitReview')
+        ->assertHasErrors(['reviewBody', 'rating']);
 });

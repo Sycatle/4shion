@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,6 +25,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Whether the user has a paid order containing the given product.
+     */
+    public function hasPurchased(Product $product): bool
+    {
+        return $this->orders()
+            ->whereIn('status', [OrderStatus::Paid, OrderStatus::Shipped, OrderStatus::Delivered])
+            ->whereHas('items.variant', fn (Builder $variants) => $variants->where('product_id', $product->id))
+            ->exists();
     }
 
     /** @return HasMany<Order, $this> */

@@ -9,6 +9,7 @@ use App\Models\ProductVariant;
 use App\Models\Review;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -21,6 +22,7 @@ use Livewire\Component;
  * @property-read int $price
  * @property-read Collection<int, Review> $reviews
  * @property-read float $averageRating
+ * @property-read bool $canReview
  */
 #[Layout('components.layouts.shop')]
 class ProductShow extends Component
@@ -34,6 +36,14 @@ class ProductShow extends Component
     public ?string $error = null;
 
     public bool $added = false;
+
+    public int $rating = 5;
+
+    public ?string $reviewTitle = null;
+
+    public string $reviewBody = '';
+
+    public bool $reviewSubmitted = false;
 
     public function mount(Product $product): void
     {
@@ -81,6 +91,38 @@ class ProductShow extends Component
 
         $this->added = true;
         $this->dispatch('cart-updated');
+    }
+
+    public function submitReview(): void
+    {
+        abort_unless(auth()->check(), 403);
+        Gate::authorize('review', $this->product);
+
+        $data = $this->validate([
+            'rating' => ['required', 'integer', 'between:1,5'],
+            'reviewTitle' => ['nullable', 'string', 'max:120'],
+            'reviewBody' => ['required', 'string', 'min:10', 'max:2000'],
+        ], attributes: [
+            'rating' => 'note',
+            'reviewTitle' => 'titre',
+            'reviewBody' => 'avis',
+        ]);
+
+        $this->product->reviews()->create([
+            'user_id' => auth()->id(),
+            'rating' => $data['rating'],
+            'title' => $data['reviewTitle'],
+            'body' => $data['reviewBody'],
+        ]);
+
+        $this->reset('reviewTitle', 'reviewBody', 'rating');
+        $this->reviewSubmitted = true;
+    }
+
+    #[Computed]
+    public function canReview(): bool
+    {
+        return auth()->check() && Gate::allows('review', $this->product);
     }
 
     /** @return Collection<int, ProductVariant> */

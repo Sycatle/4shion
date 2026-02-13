@@ -92,6 +92,34 @@
     <section id="avis" class="mt-24 border-t border-line pt-12">
         <h2 class="text-2xl">Avis clients</h2>
 
+        @if ($reviewSubmitted)
+            <p class="mt-6 max-w-2xl border border-ink bg-white px-4 py-3 text-sm" role="status">Merci ! Votre avis sera publié après modération.</p>
+        @elseif ($this->canReview)
+            <form wire:submit="submitReview" class="mt-6 max-w-2xl space-y-4 border border-line bg-white p-6">
+                <p class="eyebrow">Donner mon avis</p>
+                <div>
+                    <label for="rating" class="mb-2 block text-xs text-muted">Note</label>
+                    <select id="rating" wire:model="rating" class="field w-auto pr-10">
+                        @foreach ([5, 4, 3, 2, 1] as $value)
+                            <option value="{{ $value }}">{{ str_repeat('★', $value) }}{{ str_repeat('☆', 5 - $value) }}</option>
+                        @endforeach
+                    </select>
+                    @error('rating') <p class="mt-1 text-xs text-red-700">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label for="reviewTitle" class="mb-2 block text-xs text-muted">Titre (facultatif)</label>
+                    <input id="reviewTitle" type="text" wire:model="reviewTitle" class="field">
+                    @error('reviewTitle') <p class="mt-1 text-xs text-red-700">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label for="reviewBody" class="mb-2 block text-xs text-muted">Votre avis</label>
+                    <textarea id="reviewBody" rows="4" wire:model="reviewBody" class="field"></textarea>
+                    @error('reviewBody') <p class="mt-1 text-xs text-red-700">{{ $message }}</p> @enderror
+                </div>
+                <button type="submit" class="btn-primary">Publier mon avis</button>
+            </form>
+        @endif
+
         @forelse ($this->reviews as $review)
             <article class="mt-8 max-w-2xl border-b border-line pb-8" wire:key="review-{{ $review->id }}">
                 <p class="text-sm">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</p>

@@ -55,7 +55,7 @@ it('requires a unique slug', function () {
 
 it('manages variants of a product', function () {
     $product = Product::factory()->create();
-    $variant = ProductVariant::factory()->for($product)->create(['stock' => 4]);
+    $variant = ProductVariant::factory()->for($product)->create(['stock' => 4, 'size' => 'XL', 'color' => 'Ecru']);
 
     Livewire::test(VariantsRelationManager::class, ['ownerRecord' => $product, 'pageClass' => EditProduct::class])
         ->assertCanSeeTableRecords([$variant])

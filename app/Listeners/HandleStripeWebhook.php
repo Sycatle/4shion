@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Actions\Orders\CancelOrder;
 use App\Actions\Orders\MarkOrderPaid;
-use App\Enums\OrderStatus;
+use App\Actions\Orders\MarkOrderRefunded;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Events\WebhookReceived;
@@ -15,7 +15,10 @@ use Laravel\Cashier\Events\WebhookReceived;
  */
 class HandleStripeWebhook
 {
-    public function __construct(private MarkOrderPaid $markOrderPaid, private CancelOrder $cancelOrder) {}
+    public function __construct(private MarkOrderPaid $markOrderPaid,
+        private CancelOrder $cancelOrder,
+        private MarkOrderRefunded $markOrderRefunded,
+    ) {}
 
     public function handle(WebhookReceived $event): void
     {
@@ -67,8 +70,8 @@ class HandleStripeWebhook
     {
         $order = Order::query()->where('stripe_payment_intent', $charge['payment_intent'] ?? null)->first();
 
-        if ($order !== null && ($charge['refunded'] ?? false) === true && $order->status->isPaid()) {
-            $order->update(['status' => OrderStatus::Refunded]);
+        if ($order !== null && ($charge['refunded'] ?? false) === true) {
+            ($this->markOrderRefunded)($order);
         }
     }
 }

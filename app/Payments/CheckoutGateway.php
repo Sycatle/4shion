@@ -13,4 +13,7 @@ interface CheckoutGateway
 
     /** Close a session so it can no longer be paid. */
     public function expireSession(string $sessionId): void;
+
+    /** Refund the full amount of a payment. Idempotent per payment intent. */
+    public function refund(string $paymentIntent): void;
 }

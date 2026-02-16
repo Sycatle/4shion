@@ -76,6 +76,14 @@ class StripeCheckoutGateway implements CheckoutGateway
         $this->client()->checkout->sessions->expire($sessionId);
     }
 
+    public function refund(string $paymentIntent): void
+    {
+        $this->client()->refunds->create(
+            ['payment_intent' => $paymentIntent],
+            ['idempotency_key' => "refund-{$paymentIntent}"],
+        );
+    }
+
     private function client(): StripeClient
     {
         return Cashier::stripe();

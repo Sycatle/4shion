@@ -29,6 +29,8 @@ class CategoryResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $recordRouteKeyName = 'id';
+
     protected static ?int $navigationSort = 20;
 
     public static function form(Schema $schema): Schema

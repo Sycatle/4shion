@@ -29,6 +29,20 @@ return [
         'email' => 'hello@4shion.test',
     ],
 
+    /*
+    | Each category owns a colour field; product images are blended onto it.
+    | `ink` is the text colour that stays legible on the field.
+    */
+    'category_themes' => [
+        'sweats-hoodies' => ['field' => '#9FB3C8', 'ink' => '#17181A'],
+        't-shirts' => ['field' => '#E3C65A', 'ink' => '#17181A'],
+        'vestes-manteaux' => ['field' => '#2F4A3C', 'ink' => '#F7F7F4'],
+        'pantalons' => ['field' => '#6B5B4B', 'ink' => '#F7F7F4'],
+        'accessoires' => ['field' => '#E6C1BE', 'ink' => '#17181A'],
+    ],
+
+    'default_category_theme' => ['field' => '#E4E4E0', 'ink' => '#17181A'],
+
     'low_stock_threshold' => 3,
 
     'per_page' => 12,

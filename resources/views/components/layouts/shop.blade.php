@@ -10,6 +10,8 @@
             <meta name="description" content="{{ $description }}">
         @endisset
 
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="flex min-h-screen flex-col font-sans">

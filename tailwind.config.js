@@ -13,20 +13,20 @@ export default {
     theme: {
         extend: {
             colors: {
-                ink: '#0E0E0E',
-                paper: '#F6F4EF',
-                sand: {
-                    DEFAULT: '#C8B79A',
-                    dark: '#A8977A',
+                ink: '#17181A',
+                paper: '#F7F7F4',
+                concrete: '#E4E4E0',
+                steel: '#8C9096',
+                line: '#D6D6D0',
+                muted: '#5E6369',
+                signal: {
+                    DEFAULT: '#2A3FE8',
+                    dark: '#1F31C0',
                 },
-                line: '#E2DED5',
-                muted: '#6B6862',
             },
             fontFamily: {
                 sans: ['"Inter Variable"', ...defaultTheme.fontFamily.sans],
-            },
-            letterSpacing: {
-                brand: '0.18em',
+                display: ['"Archivo Variable"', ...defaultTheme.fontFamily.sans],
             },
         },
     },

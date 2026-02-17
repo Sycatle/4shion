@@ -1,4 +1,5 @@
 @import '@fontsource-variable/inter';
+@import '@fontsource-variable/archivo/wdth.css';
 
 @tailwind base;
 @tailwind components;
@@ -10,21 +11,36 @@
     }
 
     h1, h2, h3 {
-        @apply font-semibold tracking-tight;
+        @apply font-display font-bold;
+        font-stretch: 75%;
+        letter-spacing: -0.015em;
+    }
+
+    :focus-visible {
+        @apply outline outline-2 outline-offset-2 outline-signal;
     }
 
     [x-cloak] {
         display: none !important;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
 }
 
 @layer components {
     .btn {
-        @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-medium uppercase tracking-[0.14em] transition duration-200 disabled:cursor-not-allowed disabled:opacity-40;
+        @apply inline-flex h-12 items-center justify-center gap-2 px-6 text-sm font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40;
     }
 
     .btn-primary {
-        @apply btn bg-ink text-paper hover:bg-neutral-800;
+        @apply btn bg-signal text-white hover:bg-signal-dark;
     }
 
     .btn-outline {
@@ -32,11 +48,13 @@
     }
 
     .field {
-        @apply block w-full border border-line bg-white px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-ink focus:ring-0;
+        @apply block w-full border border-line bg-white px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-signal focus:ring-1 focus:ring-signal;
     }
 
-    .eyebrow {
-        @apply text-xs font-medium uppercase tracking-brand text-muted;
+    .display {
+        @apply font-display font-extrabold leading-[0.9];
+        font-stretch: 62%;
+        letter-spacing: -0.02em;
     }
 
     .shell {

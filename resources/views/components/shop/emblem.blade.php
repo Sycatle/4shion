@@ -1,0 +1,4 @@
+@props(['class' => 'h-6 w-auto'])
+<svg viewBox="0 0 415 700" fill="currentColor" aria-hidden="true" {{ $attributes->merge(['class' => $class]) }}>
+    <path d="M204 700V563H0V427Q22 379 40.5 313.5Q59 248 73 168.5Q87 89 93 0H260Q256 33 245.5 77Q235 121 220 170.5Q205 220 187.5 268Q170 316 151.5 358Q133 400 115 429H204V369Q213 349 226 316.5Q239 284 253 244Q267 204 279.5 162.5Q292 121 299 85H366V429H415V563H366V700Z"/>
+</svg>

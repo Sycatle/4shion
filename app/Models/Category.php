@@ -19,6 +19,19 @@ class Category extends Model
         return 'slug';
     }
 
+    /** @return array{field: string, ink: string} */
+    public function theme(): array
+    {
+        return config("shop.category_themes.{$this->slug}", config('shop.default_category_theme'));
+    }
+
+    public function imageUrl(): ?string
+    {
+        $path = "images/categories/{$this->slug}.webp";
+
+        return file_exists(public_path($path)) ? asset($path) : null;
+    }
+
     /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {

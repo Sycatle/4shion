@@ -48,6 +48,7 @@ class CatalogSeeder extends Seeder
             'name' => $data['name'],
             'slug' => Str::slug($data['name']),
             'description' => $data['description'],
+            'specs' => $this->specs()[$data['name']] ?? null,
             'base_price' => $data['price'],
             'is_active' => true,
             'is_featured' => $data['featured'] ?? false,
@@ -80,6 +81,37 @@ class CatalogSeeder extends Seeder
                 return;
             }
         }
+    }
+
+    /**
+     * @return array<string, array{composition: string, weight: string, fit: string, care: string}>
+     */
+    private function specs(): array
+    {
+        $wash = 'Lavage machine 30 °C, à l\'envers. Séchage à plat.';
+
+        return [
+            'Hoodie Atlas' => ['composition' => '100 % coton biologique', 'weight' => '450 g/m²', 'fit' => 'Oversize', 'care' => $wash],
+            'Sweat Meridian' => ['composition' => '100 % coton biologique brossé', 'weight' => '380 g/m²', 'fit' => 'Droite', 'care' => $wash],
+            'Hoodie Zip Orion' => ['composition' => '85 % coton, 15 % polyester recyclé', 'weight' => '400 g/m²', 'fit' => 'Regular', 'care' => $wash],
+            'Sweat Quartz' => ['composition' => '100 % coton', 'weight' => '360 g/m²', 'fit' => 'Boxy', 'care' => $wash],
+            'Tee Essential' => ['composition' => '100 % coton peigné', 'weight' => '220 g/m²', 'fit' => 'Droite', 'care' => $wash],
+            'Tee Oversize Nova' => ['composition' => '100 % coton', 'weight' => '250 g/m²', 'fit' => 'Oversize', 'care' => $wash],
+            'Tee Heavy Apex' => ['composition' => '100 % coton', 'weight' => '280 g/m²', 'fit' => 'Boxy', 'care' => $wash],
+            'Polo Lumen' => ['composition' => '100 % coton piqué', 'weight' => '230 g/m²', 'fit' => 'Regular', 'care' => $wash],
+            'Tee Longline Vega' => ['composition' => '100 % coton jersey', 'weight' => '190 g/m²', 'fit' => 'Allongée', 'care' => $wash],
+            'Veste Overshirt Kodo' => ['composition' => '100 % coton twill', 'weight' => '320 g/m²', 'fit' => 'Ample', 'care' => 'Lavage machine 30 °C. Repassage doux.'],
+            'Bomber Helix' => ['composition' => '100 % nylon, doublure polyester', 'weight' => '210 g/m²', 'fit' => 'Regular', 'care' => 'Nettoyage à la main, séchage à plat.'],
+            'Manteau Long Altus' => ['composition' => '70 % laine, 30 % polyamide', 'weight' => '520 g/m²', 'fit' => 'Droite', 'care' => 'Nettoyage à sec uniquement.'],
+            'Coupe-vent Strata' => ['composition' => '100 % nylon ripstop déperlant', 'weight' => '90 g/m²', 'fit' => 'Regular', 'care' => 'Lavage machine 30 °C, sans assouplissant.'],
+            'Cargo Vector' => ['composition' => '100 % coton ripstop', 'weight' => '240 g/m²', 'fit' => 'Droite', 'care' => $wash],
+            'Pantalon Tailored Onyx' => ['composition' => '100 % laine froide', 'weight' => '260 g/m²', 'fit' => 'Fuselée', 'care' => 'Nettoyage à sec uniquement.'],
+            'Jogger Pulse' => ['composition' => '90 % coton, 10 % polyester', 'weight' => '300 g/m²', 'fit' => 'Ajustée aux chevilles', 'care' => $wash],
+            'Short Drift' => ['composition' => '100 % coton', 'weight' => '320 g/m²', 'fit' => 'Mi-cuisse', 'care' => $wash],
+            'Casquette Signal' => ['composition' => '100 % coton twill', 'weight' => '—', 'fit' => 'Réglable', 'care' => 'Nettoyage à la main.'],
+            'Bonnet Fjord' => ['composition' => '100 % laine mérinos', 'weight' => '—', 'fit' => 'Taille unique', 'care' => 'Lavage à la main à 20 °C.'],
+            'Tote Bag Canvas' => ['composition' => '100 % coton, toile 12 oz', 'weight' => '340 g/m²', 'fit' => '38 × 42 cm', 'care' => 'Lavage machine 30 °C.'],
+        ];
     }
 
     /**

@@ -14,7 +14,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-#[Fillable(['category_id', 'name', 'slug', 'description', 'base_price', 'is_active', 'is_featured'])]
+#[Fillable(['category_id', 'name', 'slug', 'description', 'specs', 'base_price', 'is_active', 'is_featured'])]
 class Product extends Model implements HasMedia
 {
     /** @use HasFactory<ProductFactory> */
@@ -25,10 +25,22 @@ class Product extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'specs' => 'array',
             'base_price' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
         ];
+    }
+
+    /** @return array<string, string> label => value, only the specs that are filled in */
+    public function specSheet(): array
+    {
+        $labels = ['composition' => 'Composition', 'weight' => 'Grammage', 'fit' => 'Coupe', 'care' => 'Entretien'];
+
+        return collect($labels)
+            ->mapWithKeys(fn (string $label, string $key) => [$label => (string) ($this->specs[$key] ?? '')])
+            ->filter()
+            ->all();
     }
 
     public function getRouteKeyName(): string

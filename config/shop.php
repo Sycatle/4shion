@@ -44,6 +44,20 @@ return [
 
     'default_category_theme' => ['field' => '#E4E4E0', 'ink' => '#17181A'],
 
+    /*
+    | Garment measurements in centimetres, flat. Used by the size guide on product pages.
+    */
+    'size_guide' => [
+        'columns' => ['Taille', 'Poitrine', 'Longueur', 'Épaules'],
+        'rows' => [
+            ['XS', '98', '66', '42'],
+            ['S', '103', '68', '44'],
+            ['M', '108', '70', '46'],
+            ['L', '113', '72', '48'],
+            ['XL', '118', '74', '50'],
+        ],
+    ],
+
     'low_stock_threshold' => 3,
 
     'per_page' => 12,

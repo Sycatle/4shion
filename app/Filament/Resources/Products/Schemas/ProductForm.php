@@ -52,6 +52,15 @@ class ProductForm
                             ->rows(5)
                             ->columnSpanFull(),
                     ]),
+                Section::make('Fiche technique')
+                    ->columns(2)
+                    ->columnSpan(2)
+                    ->components([
+                        TextInput::make('specs.composition')->label('Composition'),
+                        TextInput::make('specs.weight')->label('Grammage'),
+                        TextInput::make('specs.fit')->label('Coupe'),
+                        TextInput::make('specs.care')->label('Entretien'),
+                    ]),
                 Section::make('Publication')
                     ->columnSpan(1)
                     ->components([

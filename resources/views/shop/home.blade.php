@@ -1,66 +1,72 @@
-<x-layouts.shop title="Vêtements premium" description="4shion, vêtements premium aux lignes épurées : hoodies, t-shirts, vestes et accessoires.">
-    <section class="relative isolate overflow-hidden bg-ink text-paper">
-        @if (is_file(public_path('images/hero.webp')))
-            <img src="{{ asset('images/hero.webp') }}" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-60">
-        @endif
-        <div class="shell flex min-h-[34rem] flex-col justify-end pb-16 pt-32 lg:min-h-[40rem]">
-            <p class="eyebrow text-sand">Collection permanente</p>
-            <h1 class="mt-4 max-w-3xl text-5xl leading-[1.02] sm:text-7xl">L'essentiel, sans compromis.</h1>
-            <p class="mt-6 max-w-lg text-base text-paper/70">Des pièces aux lignes épurées, coupées dans des matières épaisses et pensées pour durer.</p>
-            <div class="mt-10 flex flex-wrap gap-4">
-                <a href="{{ route('shop.index') }}" wire:navigate class="btn bg-paper text-ink hover:bg-sand">Découvrir la boutique</a>
-                <a href="{{ route('shop.index', ['sort' => 'newest']) }}" wire:navigate class="btn border border-paper/40 text-paper hover:bg-paper hover:text-ink">Nouveautés</a>
+<x-layouts.shop title="Vêtements premium" description="4shion, basiques techniques en matières épaisses : hoodies, t-shirts, vestes, pantalons et accessoires.">
+    <section class="grid lg:min-h-[40rem] lg:grid-cols-[5fr_7fr]">
+        <div class="relative isolate overflow-hidden bg-concrete">
+            <div class="relative z-10 flex h-full flex-col justify-between gap-16 px-5 py-10 sm:px-8 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-12">
+                <h1 class="display text-[clamp(3.5rem,9vw,8rem)]">Matières épaisses.<br>Coupes droites.</h1>
+                <div class="max-w-sm space-y-6">
+                    <p class="text-base">Une collection permanente de basiques techniques, sans saison ni logo à rallonge.</p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{{ route('shop.index') }}" wire:navigate class="btn-primary">Voir la boutique</a>
+                        <a href="{{ route('shop.index', ['sort' => 'newest']) }}" wire:navigate class="btn-outline">Nouveautés</a>
+                    </div>
+                </div>
             </div>
+            <x-shop.emblem class="pointer-events-none absolute -bottom-6 right-4 -z-10 h-[24rem] w-auto text-paper lg:h-[88%]" />
+        </div>
+
+        <div class="relative min-h-[26rem] bg-ink">
+            @if (is_file(public_path('images/hero.webp')))
+                <img src="{{ asset('images/hero.webp') }}" alt="Hoodie noir et pantalon cargo olive devant un mur en béton" class="absolute inset-0 h-full w-full object-cover" fetchpriority="high">
+            @endif
         </div>
     </section>
 
     <section class="shell mt-20">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            @foreach ($categories as $category)
-                <a href="{{ route('shop.index', ['category' => $category->slug]) }}" wire:navigate class="group flex aspect-[4/3] items-end border border-line bg-white p-5 transition hover:bg-ink hover:text-paper lg:aspect-[3/4]">
-                    <span class="text-sm font-medium uppercase tracking-[0.14em]">{{ $category->name }}</span>
-                </a>
+        <h2 class="text-4xl sm:text-5xl">Les incontournables</h2>
+        <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-5">
+            @foreach ($featured as $product)
+                <x-shop.product-card :product="$product" />
             @endforeach
         </div>
     </section>
 
-    @if ($featured->isNotEmpty())
-        <section class="shell mt-24">
-            <div class="mb-8 flex items-end justify-between">
-                <div>
-                    <p class="eyebrow">Sélection</p>
-                    <h2 class="mt-2 text-3xl">Les incontournables</h2>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
-                @foreach ($featured as $product)
-                    <x-shop.product-card :product="$product" />
-                @endforeach
-            </div>
-        </section>
-    @endif
-
     <section class="shell mt-24">
-        <div class="mb-8 flex items-end justify-between">
-            <div>
-                <p class="eyebrow">Nouveautés</p>
-                <h2 class="mt-2 text-3xl">Dernières arrivées</h2>
-            </div>
-            <a href="{{ route('shop.index') }}" wire:navigate class="text-xs font-medium uppercase tracking-[0.14em] underline underline-offset-4 hover:text-muted">Tout voir</a>
+        <div class="flex items-end justify-between gap-4">
+            <h2 class="text-4xl sm:text-5xl">Dernières arrivées</h2>
+            <a href="{{ route('shop.index', ['sort' => 'newest']) }}" wire:navigate class="text-sm font-medium underline underline-offset-4">Tout voir</a>
         </div>
-        <div class="grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+        <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-5">
             @foreach ($newest as $product)
                 <x-shop.product-card :product="$product" />
             @endforeach
         </div>
     </section>
 
-    <section class="shell mt-24 grid gap-px border border-line bg-line sm:grid-cols-3">
-        @foreach ([['Matières premium', 'Coton épais, laine mélangée et finitions soignées.'], ['Livraison rapide', 'Expédition sous 48 h, offerte dès 100 €.'], ['Retours gratuits', '30 jours pour changer d\'avis, sans frais.']] as [$title, $text])
-            <div class="bg-paper p-8">
-                <h3 class="text-sm font-semibold uppercase tracking-[0.14em]">{{ $title }}</h3>
-                <p class="mt-3 text-sm text-muted">{{ $text }}</p>
-            </div>
-        @endforeach
+    <section class="mt-24" aria-labelledby="categories-title">
+        <div class="shell">
+            <h2 id="categories-title" class="text-4xl sm:text-5xl">Les catégories</h2>
+        </div>
+        <ul class="shell mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
+            @foreach ($categories as $category)
+                @php($theme = $category->theme())
+                <li class="w-[72%] shrink-0 snap-start sm:w-[44%] lg:w-auto">
+                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" wire:navigate class="group block" style="background-color: {{ $theme['field'] }}; color: {{ $theme['ink'] }}">
+                        <div class="aspect-[4/5] overflow-hidden">
+                            @if ($image = $category->imageUrl())
+                                <img src="{{ $image }}" alt="" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            @endif
+                        </div>
+                        <div class="flex items-end justify-between gap-3 p-4">
+                            <h3 class="display text-3xl" style="letter-spacing: -0.01em">{{ $category->name }}</h3>
+                            <div class="flex shrink-0 -space-x-2">
+                                @foreach ($category->products as $product)
+                                    <x-shop.thumb :product="$product" :theme="$theme" conversion="card" class="flex h-12 w-10 border border-paper" />
+                                @endforeach
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     </section>
 </x-layouts.shop>

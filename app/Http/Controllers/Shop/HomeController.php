@@ -11,10 +11,18 @@ class HomeController extends Controller
 {
     public function __invoke(): View
     {
+        $featured = Product::query()->active()->where('is_featured', true)->with(['category', 'media', 'variants'])->limit(4)->get();
+
+        if ($featured->count() < 4) {
+            $featured = $featured->concat(
+                Product::query()->active()->where('is_featured', false)->with(['category', 'media', 'variants'])->latest()->limit(4 - $featured->count())->get()
+            );
+        }
+
         return view('shop.home', [
-            'featured' => Product::query()->active()->where('is_featured', true)->with(['category', 'media', 'variants'])->limit(4)->get(),
+            'featured' => $featured,
             'newest' => Product::query()->active()->with(['category', 'media', 'variants'])->latest()->limit(8)->get(),
-            'categories' => Category::query()->orderBy('position')->get(),
+            'categories' => Category::query()->orderBy('position')->with(['products' => fn ($query) => $query->active()->with('media')->limit(2)])->get(),
         ]);
     }
 }

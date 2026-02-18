@@ -22,5 +22,8 @@
         </main>
 
         <x-shop.footer />
+
+        <livewire:shop.cart-drawer />
+        <livewire:shop.search-overlay />
     </body>
 </html>

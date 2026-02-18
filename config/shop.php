@@ -10,6 +10,7 @@ return [
     'shipping' => [
         'flat_rate' => 490,
         'free_threshold' => 10000,
+        'delay' => '2 à 4 jours ouvrés',
     ],
 
     /*

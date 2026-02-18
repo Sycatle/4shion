@@ -57,6 +57,10 @@
         letter-spacing: -0.02em;
     }
 
+    .chip {
+        @apply inline-flex items-center gap-2 border border-ink px-3 py-1.5 text-sm hover:bg-ink hover:text-paper;
+    }
+
     .shell {
         @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
     }

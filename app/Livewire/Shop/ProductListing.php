@@ -54,6 +54,17 @@ class ProductListing extends Component
         $this->resetPage();
     }
 
+    public function removeFilter(string $property, ?string $value = null): void
+    {
+        if (in_array($property, ['sizes', 'colors'], true)) {
+            $this->{$property} = array_values(array_diff($this->{$property}, [$value]));
+        } else {
+            $this->reset($property);
+        }
+
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
         $this->reset('search', 'category', 'sizes', 'colors', 'minPrice', 'maxPrice', 'sort');

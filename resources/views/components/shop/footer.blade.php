@@ -23,6 +23,14 @@
         </div>
     </div>
     <div class="border-t border-paper/15">
-        <div class="shell py-5 text-xs text-steel">&copy; {{ date('Y') }} {{ config('shop.company.name') }}. Tous droits réservés.</div>
+        <div class="shell flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-5 text-xs text-steel">
+            <p>&copy; {{ date('Y') }} {{ config('shop.company.name') }}. Tous droits réservés.</p>
+            <nav class="flex flex-wrap gap-x-5 gap-y-1" aria-label="Informations légales">
+                <a href="{{ route('legal.terms') }}" wire:navigate class="hover:text-paper">Conditions de vente</a>
+                <a href="{{ route('legal.notice') }}" wire:navigate class="hover:text-paper">Mentions légales</a>
+                <a href="{{ route('legal.privacy') }}" wire:navigate class="hover:text-paper">Confidentialité</a>
+                <a href="{{ route('contact') }}" wire:navigate class="hover:text-paper">Contact</a>
+            </nav>
+        </div>
     </div>
 </footer>

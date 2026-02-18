@@ -19,6 +19,11 @@ Route::get('boutique', ProductListing::class)->name('shop.index');
 Route::get('produits/{product:slug}', ProductShow::class)->name('shop.show');
 Route::get('panier', CartPage::class)->name('cart');
 
+Route::view('conditions-de-vente', 'legal.terms')->name('legal.terms');
+Route::view('mentions-legales', 'legal.notice')->name('legal.notice');
+Route::view('confidentialite', 'legal.privacy')->name('legal.privacy');
+Route::view('contact', 'legal.contact')->name('contact');
+
 Route::middleware('auth')->prefix('commande')->group(function () {
     Route::get('/', CheckoutPage::class)->name('checkout');
     Route::get('succes', CheckoutSuccess::class)->name('checkout.success');

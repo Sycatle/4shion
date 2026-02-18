@@ -40,12 +40,32 @@ it('creates the order and redirects to the payment page', function () {
         ->set('line1', '12 rue des Lilas')
         ->set('postalCode', '75011')
         ->set('city', 'Paris')
+        ->set('acceptTerms', true)
         ->call('submit')
         ->assertHasNoErrors()
         ->assertRedirect('https://checkout.test/pay/'.$user->orders()->sole()->id);
 
     expect($user->addresses()->sole()->city)->toBe('Paris')
         ->and($user->addresses()->sole()->is_default)->toBeTrue();
+});
+
+it('requires the terms to be accepted', function () {
+    fakeGateway();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    cartWith();
+
+    Livewire::test(CheckoutPage::class)
+        ->set('firstName', 'Camille')
+        ->set('lastName', 'Martin')
+        ->set('line1', '12 rue des Lilas')
+        ->set('postalCode', '75011')
+        ->set('city', 'Paris')
+        ->call('submit')
+        ->assertHasErrors(['acceptTerms' => 'accepted'])
+        ->assertDispatched('checkout-invalid');
+
+    expect($user->orders()->count())->toBe(0);
 });
 
 it('shows a friendly error when the payment provider is unavailable', function () {
@@ -59,6 +79,7 @@ it('shows a friendly error when the payment provider is unavailable', function (
         ->set('line1', '12 rue des Lilas')
         ->set('postalCode', '75011')
         ->set('city', 'Paris')
+        ->set('acceptTerms', true)
         ->call('submit')
         ->assertSet('error', 'Le paiement est momentanément indisponible. Veuillez réessayer dans quelques instants.');
 });
@@ -74,9 +95,9 @@ it('confirms the payment on the success page even if the webhook is late', funct
 
     Livewire::withQueryParams(['session_id' => 'cs_live_1'])
         ->test(CheckoutSuccess::class)
-        ->assertSee('Confirmation du paiement')
+        ->assertSee('Paiement en cours')
         ->call('refreshStatus')
-        ->assertSee('Merci pour votre commande');
+        ->assertSee('Commande confirmée');
 
     expect($order->fresh()->status)->toBe(OrderStatus::Paid);
 });

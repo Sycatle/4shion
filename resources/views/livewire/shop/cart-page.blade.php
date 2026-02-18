@@ -1,14 +1,16 @@
 <div class="shell py-10">
-    <h1 class="text-3xl sm:text-4xl">Votre panier</h1>
+    <x-shop.steps :current="1" />
+    <h1 class="display mt-8 text-6xl sm:text-7xl">Panier</h1>
 
     @if (session('status'))
         <p class="mt-6 border border-ink bg-white px-4 py-3 text-sm" role="status">{{ session('status') }}</p>
     @endif
 
     @if ($items->isEmpty())
-        <div class="mt-10 border border-line py-20 text-center">
+        <div class="mt-10 max-w-md">
             <p class="text-lg font-semibold">Votre panier est vide.</p>
-            <a href="{{ route('shop.index') }}" wire:navigate class="btn-primary mt-6">Continuer mes achats</a>
+            <p class="mt-1 text-sm text-muted">Ajoutez un article depuis la boutique pour le retrouver ici.</p>
+            <a href="{{ route('shop.index') }}" wire:navigate class="btn-primary mt-6">Voir la boutique</a>
         </div>
     @else
         <div class="mt-10 grid gap-12 lg:grid-cols-[1fr_24rem]">
@@ -21,15 +23,13 @@
                     @foreach ($items as $item)
                         @php($variant = $item->variant)
                         <li class="flex gap-5 py-6" wire:key="item-{{ $item->id }}">
-                            <a href="{{ route('shop.show', $variant->product) }}" wire:navigate class="h-32 w-24 shrink-0 overflow-hidden bg-[#EBE7DE]">
-                                @if ($image = $variant->product->imageUrl('card'))
-                                    <img src="{{ $image }}" alt="{{ $variant->product->name }}" class="h-full w-full object-cover">
-                                @endif
+                            <a href="{{ route('shop.show', $variant->product) }}" wire:navigate class="block w-24 shrink-0">
+                                <x-shop.thumb :product="$variant->product" class="flex aspect-[4/5]" />
                             </a>
                             <div class="flex flex-1 flex-col justify-between">
                                 <div class="flex justify-between gap-4">
                                     <div>
-                                        <a href="{{ route('shop.show', $variant->product) }}" wire:navigate class="text-sm font-medium hover:text-muted">{{ $variant->product->name }}</a>
+                                        <a href="{{ route('shop.show', $variant->product) }}" wire:navigate class="text-sm font-semibold hover:underline">{{ $variant->product->name }}</a>
                                         <p class="mt-1 text-xs text-muted">{{ $variant->label() }}</p>
                                     </div>
                                     <p class="text-sm">{{ \App\Support\Money::format($variant->price() * $item->quantity) }}</p>
@@ -40,7 +40,7 @@
                                         <span class="w-8 text-center text-sm">{{ $item->quantity }}</span>
                                         <button type="button" wire:click="increment({{ $item->id }})" class="h-9 w-9" aria-label="Augmenter la quantité">+</button>
                                     </div>
-                                    <button type="button" wire:click="remove({{ $item->id }})" class="text-xs uppercase tracking-[0.14em] text-muted underline underline-offset-4 hover:text-ink">Retirer</button>
+                                    <button type="button" wire:click="remove({{ $item->id }})" class="text-sm text-muted underline underline-offset-4 hover:text-ink">Retirer</button>
                                 </div>
                             </div>
                         </li>
@@ -49,13 +49,15 @@
             </div>
 
             <aside class="h-fit space-y-6 border border-line bg-white p-6">
-                <h2 class="text-sm font-semibold uppercase tracking-[0.14em]">Récapitulatif</h2>
+                <h2 class="text-3xl">Récapitulatif</h2>
+
+                <x-shop.shipping-progress :totals="$totals" />
 
                 <div>
                     @if ($coupon && $totals->discount > 0)
-                        <div class="flex items-center justify-between border border-dashed border-sand-dark px-4 py-3 text-sm">
+                        <div class="flex items-center justify-between border border-dashed border-ink px-4 py-3 text-sm">
                             <span>Code <strong>{{ $coupon->code }}</strong> appliqué</span>
-                            <button type="button" wire:click="removeCoupon" class="text-xs uppercase tracking-[0.14em] underline underline-offset-4">Retirer</button>
+                            <button type="button" wire:click="removeCoupon" class="text-sm underline underline-offset-4">Retirer</button>
                         </div>
                     @else
                         <form wire:submit="applyCoupon" class="flex gap-2">
@@ -77,7 +79,7 @@
                     <div class="flex justify-between border-t border-line pt-4 text-base font-semibold"><dt>Total</dt><dd>{{ \App\Support\Money::format($totals->total) }}</dd></div>
                 </dl>
 
-                <a href="{{ route('checkout') }}" wire:navigate class="btn-primary w-full">Passer la commande</a>
+                <a href="{{ route('checkout') }}" wire:navigate class="btn-primary w-full">Passer à la livraison</a>
             </aside>
         </div>
     @endif

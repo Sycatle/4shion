@@ -10,6 +10,7 @@ use App\Exceptions\Cart\CartException;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -34,6 +35,8 @@ class CheckoutPage extends Component
     public ?string $phone = null;
 
     public bool $saveAddress = true;
+
+    public bool $acceptTerms = false;
 
     public ?int $savedAddressId = null;
 
@@ -72,7 +75,13 @@ class CheckoutPage extends Component
     public function submit(StartCheckout $startCheckout): void
     {
         $this->error = null;
-        $data = $this->validate();
+        try {
+            $data = $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('checkout-invalid');
+
+            throw $e;
+        }
 
         /** @var User $user */
         $user = auth()->user();
@@ -129,6 +138,7 @@ class CheckoutPage extends Component
             'postalCode' => ['required', 'regex:/^\d{5}$/'],
             'city' => ['required', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:30'],
+            'acceptTerms' => ['accepted'],
         ];
     }
 
@@ -149,7 +159,10 @@ class CheckoutPage extends Component
     /** @return array<string, string> */
     protected function messages(): array
     {
-        return ['postalCode.regex' => 'Le code postal doit comporter 5 chiffres.'];
+        return [
+            'postalCode.regex' => 'Le code postal doit comporter 5 chiffres.',
+            'acceptTerms.accepted' => 'Vous devez accepter les conditions de vente pour continuer.',
+        ];
     }
 
     private function fillFrom(Address $address): void

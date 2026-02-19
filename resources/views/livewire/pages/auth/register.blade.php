@@ -37,7 +37,10 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <form wire:submit="register">
+    <h1 class="display text-6xl">Créer un compte</h1>
+    <p class="mt-3 text-sm text-muted">Déjà inscrit ? <a href="{{ route('login') }}" wire:navigate class="text-ink underline underline-offset-4">Se connecter</a></p>
+
+    <form wire:submit="register" class="mt-8">
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -61,6 +64,7 @@ new #[Layout('layouts.guest')] class extends Component
                             name="password"
                             required autocomplete="new-password" />
 
+            <p class="mt-1 text-sm text-muted">8 caractères minimum.</p>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
@@ -75,12 +79,9 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}" wire:navigate>
-                {{ __('Already registered?') }}
-            </a>
+        <div class="mt-6">
 
-            <x-primary-button class="ms-4">
+            <x-primary-button class="w-full">
                 {{ __('Register') }}
             </x-primary-button>
         </div>

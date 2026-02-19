@@ -2,11 +2,11 @@
 
 @php
     $classes = match ($status->color()) {
-        'success' => 'bg-emerald-50 text-emerald-800',
-        'info' => 'bg-sky-50 text-sky-800',
-        'danger' => 'bg-red-50 text-red-800',
-        default => 'bg-amber-50 text-amber-800',
+        'success' => 'bg-emerald-100 text-emerald-900',
+        'info' => 'bg-signal/10 text-signal-dark',
+        'danger' => 'bg-red-100 text-red-900',
+        default => 'bg-amber-100 text-amber-900',
     };
 @endphp
 
-<span {{ $attributes->class(['inline-block px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.1em]', $classes]) }}>{{ $status->label() }}</span>
+<span {{ $attributes->class(['inline-block px-2.5 py-1 text-xs font-semibold', $classes]) }}>{{ $status->label() }}</span>

@@ -9,13 +9,17 @@
 @endphp
 
 <div class="shell py-10">
-    <p class="eyebrow">Mon compte</p>
-    <h1 class="mt-2 text-3xl sm:text-4xl">{{ $title }}</h1>
+    <h1 class="display text-6xl sm:text-7xl">{{ $title }}</h1>
 
-    <nav class="mt-8 flex gap-8 overflow-x-auto border-b border-line text-xs font-medium uppercase tracking-[0.14em]" aria-label="Compte">
+    <nav class="mt-8 flex items-center gap-8 overflow-x-auto border-b border-line text-sm font-medium" aria-label="Compte">
         @foreach ($links as [$route, $label])
-            <a href="{{ route($route) }}" wire:navigate @class(['whitespace-nowrap pb-4', 'border-b-2 border-ink' => request()->routeIs($route.'*'), 'text-muted hover:text-ink' => ! request()->routeIs($route.'*')])>{{ $label }}</a>
+            @php($active = request()->routeIs($route.'*'))
+            <a href="{{ route($route) }}" wire:navigate @if ($active) aria-current="page" @endif @class(['whitespace-nowrap border-b-2 pb-4', 'border-signal text-ink' => $active, 'border-transparent text-muted hover:text-ink' => ! $active])>{{ $label }}</a>
         @endforeach
+        <form method="POST" action="{{ route('logout') }}" class="ml-auto pb-4">
+            @csrf
+            <button type="submit" class="whitespace-nowrap text-muted underline underline-offset-4 hover:text-ink">Déconnexion</button>
+        </form>
     </nav>
 
     <div class="mt-10">

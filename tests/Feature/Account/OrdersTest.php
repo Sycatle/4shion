@@ -2,6 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Livewire\Account\OrderList;
+use App\Livewire\Account\OrderShow;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
@@ -55,4 +56,28 @@ it('redirects the legacy dashboard route to the orders', function () {
     $this->actingAs(User::factory()->create())
         ->get('/dashboard')
         ->assertRedirect('/compte/commandes');
+});
+
+it('lets the customer pay a pending order again', function () {
+    $gateway = fakeGateway();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $order = pendingOrder($user);
+
+    Livewire::test(OrderShow::class, ['order' => $order])
+        ->assertSee('Cette commande attend son paiement')
+        ->call('pay')
+        ->assertRedirect('https://checkout.test/pay/'.$order->id);
+
+    expect($order->fresh()->stripe_session_id)->not->toBeNull();
+});
+
+it('does not offer payment for an order that is not pending', function () {
+    $user = User::factory()->create();
+    $order = Order::factory()->for($user)->paid()->create();
+
+    Livewire::actingAs($user)->test(OrderShow::class, ['order' => $order])
+        ->assertDontSee('Cette commande attend son paiement')
+        ->call('pay')
+        ->assertNoRedirect();
 });

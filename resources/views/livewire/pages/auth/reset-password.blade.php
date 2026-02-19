@@ -70,7 +70,8 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <form wire:submit="resetPassword">
+    <h1 class="display text-6xl">Nouveau mot de passe</h1>
+    <form wire:submit="resetPassword" class="mt-6">
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />

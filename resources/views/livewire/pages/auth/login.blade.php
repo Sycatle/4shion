@@ -25,10 +25,13 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <h1 class="display text-6xl">Connexion</h1>
+    <p class="mt-3 text-sm text-muted">Pas encore de compte ? <a href="{{ route('register') }}" wire:navigate class="text-ink underline underline-offset-4">Créer un compte</a></p>
 
-    <form wire:submit="login">
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4 mt-6" :status="session('status')" />
+
+    <form wire:submit="login" class="mt-8">
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
@@ -51,19 +54,19 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                <input wire:model="form.remember" id="remember" type="checkbox" class="border-ink text-ink focus:ring-signal" name="remember">
+                <span class="ms-2 text-sm text-muted">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}" wire:navigate>
+                <a class="underline text-sm text-muted hover:text-ink " href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="ms-3 shrink-0">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>

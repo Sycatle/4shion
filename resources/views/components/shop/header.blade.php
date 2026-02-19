@@ -2,7 +2,7 @@
     $categories = \App\Models\Category::query()->orderBy('position')->get(['id', 'name', 'slug']);
 @endphp
 
-<header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
+<header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-line bg-paper">
     <div class="bg-ink px-4 py-2 text-center text-xs text-paper">
         Livraison offerte dès {{ \App\Support\Money::format(config('shop.shipping.free_threshold')) }} d'achat
     </div>

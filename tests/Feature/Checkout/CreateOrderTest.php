@@ -63,3 +63,18 @@ it('rejects products that were deactivated', function () {
 
     app(CreateOrder::class)($user, address());
 })->throws(CartException::class);
+
+it('sells the last unit only once', function () {
+    $variant = cartWith(stock: 1);
+    $first = User::factory()->create();
+    $second = User::factory()->create();
+
+    app(CreateOrder::class)($first, address());
+
+    // The second customer still holds the item in a cart when the stock is gone.
+    app(CartManager::class)->add($variant->fresh()->forceFill(['stock' => 1]));
+
+    expect(fn () => app(CreateOrder::class)($second, address()))->toThrow(CartException::class)
+        ->and($variant->fresh()->stock)->toBe(0)
+        ->and(Order::count())->toBe(1);
+});

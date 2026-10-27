@@ -10,6 +10,7 @@ use App\Exceptions\Cart\CartException;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -20,6 +21,8 @@ use Throwable;
 #[Title('Commande')]
 class CheckoutPage extends Component
 {
+    private const MAX_ATTEMPTS_PER_MINUTE = 5;
+
     public string $firstName = '';
 
     public string $lastName = '';
@@ -85,6 +88,17 @@ class CheckoutPage extends Component
 
         /** @var User $user */
         $user = auth()->user();
+
+        // Each attempt reserves stock and opens a payment session: cap them per customer.
+        $throttleKey = 'checkout:'.$user->id;
+
+        if (RateLimiter::tooManyAttempts($throttleKey, self::MAX_ATTEMPTS_PER_MINUTE)) {
+            $this->error = sprintf('Trop de tentatives de paiement. Réessayez dans %d secondes.', RateLimiter::availableIn($throttleKey));
+
+            return;
+        }
+
+        RateLimiter::hit($throttleKey);
 
         $address = new ShippingAddress(
             firstName: $data['firstName'],

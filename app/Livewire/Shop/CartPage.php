@@ -8,6 +8,7 @@ use App\Exceptions\Cart\CartException;
 use App\Models\CartItem;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -16,6 +17,8 @@ use Livewire\Component;
 #[Title('Panier')]
 class CartPage extends Component
 {
+    private const MAX_COUPON_ATTEMPTS_PER_MINUTE = 5;
+
     public string $couponCode = '';
 
     public ?string $couponError = null;
@@ -41,6 +44,17 @@ class CartPage extends Component
     public function applyCoupon(CartManager $cart): void
     {
         $this->couponError = null;
+
+        // Coupon codes are guessable: throttle attempts per visitor.
+        $key = 'coupon:'.session()->getId();
+
+        if (RateLimiter::tooManyAttempts($key, self::MAX_COUPON_ATTEMPTS_PER_MINUTE)) {
+            $this->couponError = sprintf('Trop de tentatives. Réessayez dans %d secondes.', RateLimiter::availableIn($key));
+
+            return;
+        }
+
+        RateLimiter::hit($key);
 
         try {
             $cart->applyCoupon($this->couponCode);

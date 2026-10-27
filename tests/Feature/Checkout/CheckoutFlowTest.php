@@ -5,6 +5,7 @@ use App\Enums\OrderStatus;
 use App\Livewire\Shop\CheckoutPage;
 use App\Livewire\Shop\CheckoutSuccess;
 use App\Models\User;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
 it('requires authentication to check out', function () {
@@ -133,4 +134,24 @@ it('does not let a customer cancel someone else\'s order', function () {
         ->assertNotFound();
 
     expect($order->fresh()->status)->toBe(OrderStatus::Pending);
+});
+
+it('throttles repeated checkout attempts', function () {
+    fakeGateway();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    RateLimiter::increment('checkout:'.$user->id, amount: 5);
+    cartWith();
+
+    Livewire::test(CheckoutPage::class)
+        ->set('firstName', 'Camille')
+        ->set('lastName', 'Martin')
+        ->set('line1', '12 rue des Lilas')
+        ->set('postalCode', '75011')
+        ->set('city', 'Paris')
+        ->set('acceptTerms', true)
+        ->call('submit')
+        ->assertNoRedirect();
+
+    expect($user->orders()->exists())->toBeFalse();
 });

@@ -71,3 +71,16 @@ it('applies and rejects coupon codes', function () {
         ->assertSet('couponError', null)
         ->assertSee('BIENVENUE10');
 });
+
+it('throttles coupon attempts', function () {
+    app(CartManager::class)->add(ProductVariant::factory()->create(['stock' => 5]));
+    $page = Livewire::test(CartPage::class)->set('couponCode', 'nope');
+
+    foreach (range(1, 5) as $attempt) {
+        $page->call('applyCoupon')->assertSet('couponError', 'Ce code promo est invalide ou expiré.');
+    }
+
+    $page->call('applyCoupon');
+
+    expect($page->get('couponError'))->toStartWith('Trop de tentatives.');
+});

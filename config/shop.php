@@ -14,6 +14,12 @@ return [
     ],
 
     /*
+    | Pending orders older than this are cancelled and their stock released. Must exceed
+    | the payment session lifetime (30 minutes) so a customer still paying is never cut off.
+    */
+    'pending_order_ttl_minutes' => 60,
+
+    /*
     | Prices are stored tax-inclusive; the rate is only used to display VAT on invoices.
     */
     'vat_rate' => 20,

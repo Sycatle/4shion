@@ -16,9 +16,9 @@ it('renders the dashboard without the default Filament widgets', function () {
 });
 
 it('summarises recent paid revenue', function () {
-    Order::factory()->paid()->create(['total' => 10000]);
-    Order::factory()->paid()->create(['total' => 5000, 'paid_at' => now()->subDays(45)]);
-    Order::factory()->create(['total' => 9999]);
+    Order::factory()->paid()->totalling(10000)->create();
+    Order::factory()->paid()->totalling(5000)->create(['paid_at' => now()->subDays(45)]);
+    Order::factory()->totalling(9999)->create();
 
     Livewire::test(ShopStats::class)
         ->assertSee('100,00')

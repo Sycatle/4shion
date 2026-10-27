@@ -39,4 +39,15 @@ class OrderFactory extends Factory
             'paid_at' => now(),
         ]);
     }
+
+    /** Free-shipping, undiscounted order of the given amount (in cents). */
+    public function totalling(int $cents): static
+    {
+        return $this->state([
+            'subtotal' => $cents,
+            'discount_total' => 0,
+            'shipping_total' => 0,
+            'total' => $cents,
+        ]);
+    }
 }

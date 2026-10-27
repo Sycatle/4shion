@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fcd33145949227ea43b44d262b8aa3ed",
+    "content-hash": "43e10cf5c607c0fc0dabe0fac1400de2",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10639,6 +10639,57 @@
             "time": "2026-10-27T12:37:16+00:00"
         },
         {
+            "name": "entropy/entropy",
+            "version": "0.4.36",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TomasVotruba/entropy.git",
+                "reference": "9f08272a96275d22a9d9808a32581392920626db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TomasVotruba/entropy/zipball/9f08272a96275d22a9d9808a32581392920626db",
+                "reference": "9f08272a96275d22a9d9808a32581392920626db",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=7.4",
+                "symfony/polyfill-php80": "^1.31"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "^1.4",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^9.6",
+                "rector/jack": "^1.0",
+                "rector/rector": "^2.4",
+                "rector/swiss-knife": "^2.4",
+                "shipmonk/composer-dependency-analyser": "^1.8",
+                "shipmonk/dead-code-detector": "^1.4",
+                "symplify/easy-coding-standard": "^13.1",
+                "symplify/phpstan-rules": "^14.10",
+                "tomasvotruba/type-coverage": "^2.2",
+                "tracy/tracy": "^2.12"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Entropy\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "description": "Entropy framework",
+            "support": {
+                "issues": "https://github.com/TomasVotruba/entropy/issues",
+                "source": "https://github.com/TomasVotruba/entropy/tree/0.4.36"
+            },
+            "time": "2026-10-26T16:46:17+00:00"
+        },
+        {
             "name": "fakerphp/faker",
             "version": "v1.24.1",
             "source": {
@@ -13101,6 +13152,85 @@
             "time": "2026-07-15T19:09:14+00:00"
         },
         {
+            "name": "nunomaduro/pokio",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nunomaduro/pokio.git",
+                "reference": "fc7884ebc5b0fabd6e267c0b4e6f750ba69cee5b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nunomaduro/pokio/zipball/fc7884ebc5b0fabd6e267c0b4e6f750ba69cee5b",
+                "reference": "fc7884ebc5b0fabd6e267c0b4e6f750ba69cee5b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3.0"
+            },
+            "conflict": {
+                "symplify/easy-parallel": "<11.2.2"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.29.0",
+                "peckphp/peck": "^0.1.3",
+                "pestphp/pest": "^4.5.0",
+                "pestphp/pest-plugin-type-coverage": "^4.0.3",
+                "phpstan/phpstan": "^2.1.46",
+                "symfony/var-dumper": "^7.4.8 || ^8.0.8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Functions.php"
+                ],
+                "psr-4": {
+                    "Pokio\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "Pokio is a dead simple asynchronous API for PHP that just works",
+            "keywords": [
+                "asynchronous",
+                "library",
+                "php",
+                "pokio"
+            ],
+            "support": {
+                "issues": "https://github.com/nunomaduro/pokio/issues",
+                "source": "https://github.com/nunomaduro/pokio/tree/v1.0.1"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/paypalme/enunomaduro",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/nunomaduro",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2026-04-12T12:06:31+00:00"
+        },
+        {
             "name": "pestphp/pest",
             "version": "v4.7.8",
             "source": {
@@ -13563,6 +13693,75 @@
                 "source": "https://github.com/pestphp/pest-plugin-profanity/tree/v4.2.1"
             },
             "time": "2025-12-08T00:13:17+00:00"
+        },
+        {
+            "name": "pestphp/pest-plugin-type-coverage",
+            "version": "v4.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pestphp/pest-plugin-type-coverage.git",
+                "reference": "f485d40ec4e2081f9d3456c00f2c008f145d7896"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pestphp/pest-plugin-type-coverage/zipball/f485d40ec4e2081f9d3456c00f2c008f145d7896",
+                "reference": "f485d40ec4e2081f9d3456c00f2c008f145d7896",
+                "shasum": ""
+            },
+            "require": {
+                "nunomaduro/pokio": "^1.0.0",
+                "pestphp/pest-plugin": "^4.0.0",
+                "php": "^8.3",
+                "phpstan/phpstan": "^1.12.24|^2.1.46",
+                "tomasvotruba/type-coverage": "^1.0.0|^2.1.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^4.4.5",
+                "pestphp/pest-dev-tools": "^4.1.0"
+            },
+            "type": "library",
+            "extra": {
+                "pest": {
+                    "plugins": [
+                        "Pest\\TypeCoverage\\Plugin"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pest\\TypeCoverage\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "The Type Coverage plugin for Pest PHP.",
+            "keywords": [
+                "coverage",
+                "framework",
+                "pest",
+                "php",
+                "plugin",
+                "test",
+                "testing",
+                "type-coverage",
+                "unit"
+            ],
+            "support": {
+                "source": "https://github.com/pestphp/pest-plugin-type-coverage/tree/v4.0.4"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-04-06T14:00:30+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -15707,6 +15906,77 @@
                 }
             ],
             "time": "2025-12-08T11:19:18+00:00"
+        },
+        {
+            "name": "tomasvotruba/type-coverage",
+            "version": "2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TomasVotruba/type-coverage.git",
+                "reference": "2d8e722c1776a17f506f6a66cd325e50fbaa12ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TomasVotruba/type-coverage/zipball/2d8e722c1776a17f506f6a66cd325e50fbaa12ee",
+                "reference": "2d8e722c1776a17f506f6a66cd325e50fbaa12ee",
+                "shasum": ""
+            },
+            "require": {
+                "entropy/entropy": "^0.4.23",
+                "php": ">=7.4",
+                "phpstan/phpstan": "^2.2"
+            },
+            "require-dev": {
+                "doctrine/collections": "^2.3",
+                "phpstan/extension-installer": "^1.4",
+                "phpunit/phpunit": "^13.2",
+                "rector/jack": "^1.1",
+                "rector/rector": "^2.5",
+                "shipmonk/composer-dependency-analyser": "^1.8",
+                "shipmonk/dead-code-detector": "^1.4",
+                "symfony/dom-crawler": "^8.1",
+                "symfony/form": "^8.1",
+                "symplify/easy-coding-standard": "^13.2",
+                "tracy/tracy": "^2.12"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "config/extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rector\\TypePerfect\\": "packages/type-perfect/src",
+                    "TomasVotruba\\TypeCoverage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Measure type coverage of your project",
+            "keywords": [
+                "phpstan-extension",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/TomasVotruba/type-coverage/issues",
+                "source": "https://github.com/TomasVotruba/type-coverage/tree/2.5.1"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/rectorphp",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/tomasvotruba",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-09T19:09:05+00:00"
         },
         {
             "name": "webmozart/assert",

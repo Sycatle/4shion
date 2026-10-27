@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Non-nullable foreign keys: these relations are always present.
+ *
+ * @property-read Product $product
+ * @property-read User $user
+ */
 #[Fillable(['product_id', 'user_id', 'rating', 'title', 'body', 'approved_at'])]
 class Review extends Model
 {

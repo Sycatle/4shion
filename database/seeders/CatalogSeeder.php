@@ -115,7 +115,12 @@ class CatalogSeeder extends Seeder
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return list<array{
+     *     name: string,
+     *     description: string,
+     *     sizes?: list<string>,
+     *     products: list<array{name: string, description: string, price: int, colors: list<string>, featured?: bool}>,
+     * }>
      */
     private function catalog(): array
     {

@@ -51,7 +51,7 @@ class ProductShow extends Component
 
         $this->product = $product->load(['category', 'media']);
         // Preselect the first color that still has stock.
-        $this->color = $this->variants->sortByDesc(fn (ProductVariant $v) => $v->isInStock())->pluck('color')->first();
+        $this->color = $this->variants->sortByDesc(fn (ProductVariant $v) => $v->isInStock())->first()?->color;
     }
 
     public function selectColor(string $color): void
@@ -99,7 +99,7 @@ class ProductShow extends Component
         abort_unless(auth()->check(), 403);
         Gate::authorize('review', $this->product);
 
-        $data = $this->validate([
+        $this->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
             'reviewTitle' => ['nullable', 'string', 'max:120'],
             'reviewBody' => ['required', 'string', 'min:10', 'max:2000'],
@@ -111,9 +111,9 @@ class ProductShow extends Component
 
         $this->product->reviews()->create([
             'user_id' => auth()->id(),
-            'rating' => $data['rating'],
-            'title' => $data['reviewTitle'],
-            'body' => $data['reviewBody'],
+            'rating' => $this->rating,
+            'title' => $this->reviewTitle,
+            'body' => $this->reviewBody,
         ]);
 
         $this->reset('reviewTitle', 'reviewBody', 'rating');
@@ -137,7 +137,7 @@ class ProductShow extends Component
     #[Computed]
     public function colors(): Collection
     {
-        return $this->variants->unique('color')->pluck('color_hex', 'color');
+        return $this->variants->unique('color')->mapWithKeys(fn (ProductVariant $v) => [$v->color => $v->color_hex]);
     }
 
     /** @return Collection<string, ProductVariant> variants of the selected color keyed by size */

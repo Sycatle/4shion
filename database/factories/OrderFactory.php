@@ -11,12 +11,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /** @extends Factory<Order> */
 class OrderFactory extends Factory
 {
+    private const VAT_RATE = 20.0;
+
     public function definition(): array
     {
-        $address = Address::factory()->make()->only([
-            'first_name', 'last_name', 'line1', 'line2', 'postal_code', 'city', 'country', 'phone',
-        ]);
+        $address = Address::factory()->make()->toShippingAddress();
         $subtotal = fake()->numberBetween(4900, 30000);
+        $total = $subtotal + 490;
 
         return [
             'number' => fn () => 'TMP-'.fake()->unique()->numerify('########'),
@@ -25,9 +26,9 @@ class OrderFactory extends Factory
             'subtotal' => $subtotal,
             'discount_total' => 0,
             'shipping_total' => 490,
-            'total' => $subtotal + 490,
-            'vat_rate' => 20,
-            'vat_total' => fn (array $attributes) => Order::vatIncludedIn($attributes['total'], (float) $attributes['vat_rate']),
+            'total' => $total,
+            'vat_rate' => self::VAT_RATE,
+            'vat_total' => Order::vatIncludedIn($total, self::VAT_RATE),
             'currency' => 'EUR',
             'shipping_address' => $address,
             'billing_address' => $address,
@@ -50,6 +51,7 @@ class OrderFactory extends Factory
             'discount_total' => 0,
             'shipping_total' => 0,
             'total' => $cents,
+            'vat_total' => Order::vatIncludedIn($cents, self::VAT_RATE),
         ]);
     }
 }

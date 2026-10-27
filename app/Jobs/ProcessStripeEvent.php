@@ -24,65 +24,79 @@ final class ProcessStripeEvent implements ShouldQueue
     /** @var list<int> */
     public array $backoff = [10, 60, 300, 900];
 
-    /** @param  array<string, mixed>  $payload */
-    public function __construct(public array $payload) {}
+    /**
+     * @param  array<mixed>  $object  the event's `data.object` (a Checkout Session or a Charge)
+     */
+    public function __construct(
+        public string $eventId,
+        public string $type,
+        public array $object,
+    ) {}
 
     public function handle(MarkOrderPaid $markOrderPaid, CancelOrder $cancelOrder, MarkOrderRefunded $markOrderRefunded): void
     {
-        /** @var array<string, mixed> $object */
-        $object = $this->payload['data']['object'] ?? [];
-
-        match ($this->payload['type'] ?? null) {
-            'checkout.session.completed', 'checkout.session.async_payment_succeeded' => $this->paid($object, $markOrderPaid),
-            'checkout.session.expired', 'checkout.session.async_payment_failed' => $this->expired($object, $cancelOrder),
-            'charge.refunded' => $this->refunded($object, $markOrderRefunded),
+        match ($this->type) {
+            'checkout.session.completed', 'checkout.session.async_payment_succeeded' => $this->paid($markOrderPaid),
+            'checkout.session.expired', 'checkout.session.async_payment_failed' => $this->expired($cancelOrder),
+            'charge.refunded' => $this->refunded($markOrderRefunded),
             default => null,
         };
 
-        StripeEvent::query()->whereKey($this->payload['id'] ?? null)->update(['processed_at' => now()]);
+        StripeEvent::query()->whereKey($this->eventId)->update(['processed_at' => now()]);
     }
 
-    /** @param  array<string, mixed>  $session */
-    private function paid(array $session, MarkOrderPaid $markOrderPaid): void
+    private function paid(MarkOrderPaid $markOrderPaid): void
     {
-        $order = Order::query()->where('stripe_session_id', $session['id'] ?? null)->first();
+        $order = $this->orderBy('stripe_session_id', 'id');
 
-        if ($order === null || ($session['payment_status'] ?? null) !== 'paid') {
+        if ($order === null || $this->string('payment_status') !== 'paid') {
             return;
         }
 
-        if (($session['amount_total'] ?? null) !== $order->total) {
+        $amount = $this->object['amount_total'] ?? null;
+
+        if ($amount !== $order->total) {
             Log::error('Stripe amount does not match the order total.', [
                 'order' => $order->number,
                 'expected' => $order->total,
-                'received' => $session['amount_total'] ?? null,
+                'received' => $amount,
             ]);
 
             return;
         }
 
-        $paymentIntent = $session['payment_intent'] ?? null;
-
-        $markOrderPaid($order, is_string($paymentIntent) ? $paymentIntent : null);
+        $markOrderPaid($order, $this->string('payment_intent'));
     }
 
-    /** @param  array<string, mixed>  $session */
-    private function expired(array $session, CancelOrder $cancelOrder): void
+    private function expired(CancelOrder $cancelOrder): void
     {
-        $order = Order::query()->where('stripe_session_id', $session['id'] ?? null)->first();
+        $order = $this->orderBy('stripe_session_id', 'id');
 
         if ($order !== null) {
             $cancelOrder($order);
         }
     }
 
-    /** @param  array<string, mixed>  $charge */
-    private function refunded(array $charge, MarkOrderRefunded $markOrderRefunded): void
+    private function refunded(MarkOrderRefunded $markOrderRefunded): void
     {
-        $order = Order::query()->where('stripe_payment_intent', $charge['payment_intent'] ?? null)->first();
+        $order = $this->orderBy('stripe_payment_intent', 'payment_intent');
 
-        if ($order !== null && ($charge['refunded'] ?? false) === true) {
+        if ($order !== null && ($this->object['refunded'] ?? false) === true) {
             $markOrderRefunded($order);
         }
+    }
+
+    private function orderBy(string $column, string $key): ?Order
+    {
+        $value = $this->string($key);
+
+        return $value === null ? null : Order::query()->where($column, $value)->first();
+    }
+
+    private function string(string $key): ?string
+    {
+        $value = $this->object[$key] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 }

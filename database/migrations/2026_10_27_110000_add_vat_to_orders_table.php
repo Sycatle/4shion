@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -19,14 +19,9 @@ return new class extends Migration
             $table->unsignedInteger('vat_total')->nullable()->after('vat_rate');
         });
 
-        $rate = (float) config('shop.vat_rate');
-
-        DB::table('orders')->select(['id', 'total'])->orderBy('id')->each(function (object $order) use ($rate): void {
-            DB::table('orders')->where('id', $order->id)->update([
-                'vat_rate' => $rate,
-                'vat_total' => Order::vatIncludedIn((int) $order->total, $rate),
-            ]);
-        });
+        // Same rounding as Order::vatIncludedIn(), done in one set-based statement.
+        $rate = Config::float('shop.vat_rate');
+        DB::update('UPDATE orders SET vat_rate = ?, vat_total = total - ROUND(total / CAST(? AS numeric))', [$rate, 1 + $rate / 100]);
 
         Schema::table('orders', function (Blueprint $table) {
             $table->decimal('vat_rate', 5, 2)->nullable(false)->change();

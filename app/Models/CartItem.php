@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Non-nullable foreign keys: these relations are always present.
+ *
+ * @property-read Cart $cart
+ * @property-read ProductVariant $variant
+ */
 #[Fillable(['cart_id', 'product_variant_id', 'quantity'])]
 class CartItem extends Model
 {

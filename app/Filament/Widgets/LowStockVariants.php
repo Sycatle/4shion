@@ -8,6 +8,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 
 class LowStockVariants extends TableWidget
 {
@@ -21,7 +22,7 @@ class LowStockVariants extends TableWidget
             ->heading('Stock faible')
             ->query(fn (): Builder => ProductVariant::query()
                 ->with('product')
-                ->where('stock', '<=', config('shop.low_stock_threshold'))
+                ->where('stock', '<=', Config::integer('shop.low_stock_threshold'))
                 ->whereHas('product', fn (Builder $query) => $query->where('is_active', true)))
             ->columns([
                 TextColumn::make('product.name')->label('Produit'),

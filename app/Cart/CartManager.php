@@ -188,6 +188,8 @@ class CartManager
 
     /**
      * Cap a requested quantity to the line maximum and to the available stock.
+     *
+     * @return int<1, max>
      */
     private function clampedQuantity(ProductVariant $variant, int $requested, bool $fail = true): int
     {

@@ -22,7 +22,7 @@ return [
     /*
     | Prices are stored tax-inclusive; the rate is only used to display VAT on invoices.
     */
-    'vat_rate' => 20,
+    'vat_rate' => 20.0,
 
     /*
     | Seller identity printed on invoices (fictional demo values).

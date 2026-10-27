@@ -6,6 +6,7 @@ use App\Data\ProductFilters;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 
 class ListProducts
 {
@@ -43,6 +44,6 @@ class ListProducts
             default => $query->orderByDesc('created_at')->orderByDesc('id'),
         };
 
-        return $query->paginate(config('shop.per_page'))->withQueryString();
+        return $query->paginate(Config::integer('shop.per_page'))->withQueryString();
     }
 }

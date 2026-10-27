@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Config;
 
 class VariantsRelationManager extends RelationManager
 {
@@ -86,7 +87,7 @@ class VariantsRelationManager extends RelationManager
                     ->badge()
                     ->color(fn (int $state): string => match (true) {
                         $state === 0 => 'danger',
-                        $state <= config('shop.low_stock_threshold') => 'warning',
+                        $state <= Config::integer('shop.low_stock_threshold') => 'warning',
                         default => 'success',
                     })
                     ->sortable(),

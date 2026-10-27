@@ -14,6 +14,11 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * Non-nullable foreign keys: these relations are always present.
+ *
+ * @property-read Category $category
+ */
 #[Fillable(['category_id', 'name', 'slug', 'description', 'specs', 'base_price', 'is_active', 'is_featured'])]
 class Product extends Model implements HasMedia
 {
@@ -37,10 +42,17 @@ class Product extends Model implements HasMedia
     {
         $labels = ['composition' => 'Composition', 'weight' => 'Grammage', 'fit' => 'Coupe', 'care' => 'Entretien'];
 
-        return collect($labels)
-            ->mapWithKeys(fn (string $label, string $key) => [$label => (string) ($this->specs[$key] ?? '')])
-            ->filter()
-            ->all();
+        $sheet = [];
+
+        foreach ($labels as $key => $label) {
+            $value = $this->specs[$key] ?? null;
+
+            if (is_string($value) && $value !== '') {
+                $sheet[$label] = $value;
+            }
+        }
+
+        return $sheet;
     }
 
     public function getRouteKeyName(): string
@@ -57,7 +69,7 @@ class Product extends Model implements HasMedia
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'category' => $this->category?->name,
+            'category' => $this->category->name,
             'is_active' => $this->is_active,
             'base_price' => $this->base_price,
             'created_at' => $this->created_at?->timestamp,

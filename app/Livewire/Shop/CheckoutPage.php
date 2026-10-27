@@ -79,7 +79,7 @@ class CheckoutPage extends Component
     {
         $this->error = null;
         try {
-            $data = $this->validate();
+            $this->validate();
         } catch (ValidationException $e) {
             $this->dispatch('checkout-invalid');
 
@@ -101,13 +101,13 @@ class CheckoutPage extends Component
         RateLimiter::hit($throttleKey);
 
         $address = new ShippingAddress(
-            firstName: $data['firstName'],
-            lastName: $data['lastName'],
-            line1: $data['line1'],
-            line2: $data['line2'] ?? null,
-            postalCode: $data['postalCode'],
-            city: $data['city'],
-            phone: $data['phone'] ?? null,
+            firstName: $this->firstName,
+            lastName: $this->lastName,
+            line1: $this->line1,
+            line2: $this->line2 ?: null,
+            postalCode: $this->postalCode,
+            city: $this->city,
+            phone: $this->phone ?: null,
         );
 
         try {

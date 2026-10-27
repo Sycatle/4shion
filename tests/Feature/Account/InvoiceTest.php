@@ -7,9 +7,7 @@ use App\Models\User;
 
 function paidOrderWithItem(?User $user = null): Order
 {
-    $order = Order::factory()->for($user ?? User::factory()->create())->paid()->create([
-        'subtotal' => 8900, 'discount_total' => 0, 'shipping_total' => 0, 'total' => 8900,
-    ]);
+    $order = Order::factory()->for($user ?? User::factory()->create())->paid()->totalling(8900)->create();
     OrderItem::create([
         'order_id' => $order->id, 'product_name' => 'Hoodie Atlas', 'variant_label' => 'Noir / M',
         'sku' => 'SKU-1', 'unit_price' => 8900, 'quantity' => 1, 'total' => 8900,

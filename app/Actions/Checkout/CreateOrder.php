@@ -7,9 +7,12 @@ use App\Cart\CartTotals;
 use App\Data\ShippingAddress;
 use App\Enums\OrderStatus;
 use App\Exceptions\Cart\CartException;
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -40,7 +43,7 @@ class CreateOrder
                 ->keyBy('id');
 
             foreach ($items as $item) {
-                $variant = $variants[$item->product_variant_id];
+                $variant = $this->lockedVariant($variants, $item);
 
                 if (! $variant->product->is_active || $variant->stock < $item->quantity) {
                     throw CartException::unavailable($variant->product->name, $variant->product->is_active ? $variant->stock : 0);
@@ -49,7 +52,7 @@ class CreateOrder
 
             $coupon = $this->cart->coupon();
             $totals = CartTotals::calculate($items, $coupon);
-            $vatRate = (float) config('shop.vat_rate');
+            $vatRate = Config::float('shop.vat_rate');
 
             $order = Order::create([
                 'number' => 'PENDING-'.Str::uuid(),
@@ -61,17 +64,17 @@ class CreateOrder
                 'total' => $totals->total,
                 'vat_rate' => $vatRate,
                 'vat_total' => Order::vatIncludedIn($totals->total, $vatRate),
-                'currency' => config('shop.currency'),
+                'currency' => Config::string('shop.currency'),
                 'coupon_id' => $totals->discount > 0 ? $coupon?->id : null,
                 'coupon_code' => $totals->discount > 0 ? $coupon?->code : null,
-                'shipping_address' => $address->toArray(),
-                'billing_address' => $address->toArray(),
+                'shipping_address' => $address,
+                'billing_address' => $address,
             ]);
 
             $order->update(['number' => Order::numberFor($order->id)]);
 
             foreach ($items as $item) {
-                $variant = $variants[$item->product_variant_id];
+                $variant = $this->lockedVariant($variants, $item);
 
                 $order->items()->create([
                     'product_variant_id' => $variant->id,
@@ -90,5 +93,14 @@ class CreateOrder
 
             return $order->load('items');
         });
+    }
+
+    /**
+     * @param  Collection<int, ProductVariant>  $variants  locked rows keyed by id
+     */
+    private function lockedVariant(Collection $variants, CartItem $item): ProductVariant
+    {
+        return $variants->get($item->product_variant_id)
+            ?? throw CartException::unavailable($item->variant->product->name, 0);
     }
 }

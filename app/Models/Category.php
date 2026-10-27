@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Config;
 
 #[Fillable(['name', 'slug', 'description', 'position'])]
 class Category extends Model
@@ -22,7 +23,14 @@ class Category extends Model
     /** @return array{field: string, ink: string} */
     public function theme(): array
     {
-        return config("shop.category_themes.{$this->slug}", config('shop.default_category_theme'));
+        $theme = Config::has("shop.category_themes.{$this->slug}")
+            ? "shop.category_themes.{$this->slug}"
+            : 'shop.default_category_theme';
+
+        return [
+            'field' => Config::string("{$theme}.field"),
+            'ink' => Config::string("{$theme}.ink"),
+        ];
     }
 
     public function imageUrl(): ?string

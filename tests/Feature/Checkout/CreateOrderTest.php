@@ -24,7 +24,7 @@ it('creates a pending order, snapshots the items and reserves the stock', functi
         ->and($order->items)->toHaveCount(1)
         ->and($order->items->first()->product_name)->toBe($variant->product->name)
         ->and($order->items->first()->unit_price)->toBe(4000)
-        ->and($order->shipping_address['city'])->toBe('Paris')
+        ->and($order->shipping_address->city)->toBe('Paris')
         ->and($variant->fresh()->stock)->toBe(3)
         ->and(app(CartManager::class)->count())->toBe(0);
 });

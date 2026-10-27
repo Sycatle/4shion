@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Non-nullable foreign keys: these relations are always present.
+ *
+ * @property-read Product $product
+ */
 #[Fillable(['product_id', 'sku', 'size', 'color', 'color_hex', 'price_override', 'stock'])]
 class ProductVariant extends Model
 {

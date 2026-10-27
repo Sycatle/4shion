@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 
 /**
  * Safety net for reserved stock: the `checkout.session.expired` webhook normally cancels
@@ -19,7 +20,8 @@ final class ReleaseStaleOrders extends Command
 {
     public function handle(CancelOrder $cancelOrder): int
     {
-        $minutes = (int) ($this->option('minutes') ?? config('shop.pending_order_ttl_minutes'));
+        $option = $this->option('minutes');
+        $minutes = is_numeric($option) ? (int) $option : Config::integer('shop.pending_order_ttl_minutes');
         $released = 0;
 
         Order::query()

@@ -53,17 +53,17 @@ class AddressBook extends Component
 
     public function save(): void
     {
-        $data = $this->validate();
+        $this->validate();
         $user = $this->user();
 
         $attributes = [
-            'first_name' => $data['firstName'],
-            'last_name' => $data['lastName'],
-            'line1' => $data['line1'],
-            'line2' => $data['line2'],
-            'postal_code' => $data['postalCode'],
-            'city' => $data['city'],
-            'phone' => $data['phone'],
+            'first_name' => $this->firstName,
+            'last_name' => $this->lastName,
+            'line1' => $this->line1,
+            'line2' => $this->line2 ?: null,
+            'postal_code' => $this->postalCode,
+            'city' => $this->city,
+            'phone' => $this->phone ?: null,
         ];
 
         if ($this->editingId !== null) {

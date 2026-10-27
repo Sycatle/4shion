@@ -15,14 +15,15 @@ final class HandleStripeWebhook
     public function handle(WebhookReceived $event): void
     {
         $id = $event->payload['id'] ?? null;
+        $type = $event->payload['type'] ?? null;
 
-        if (! is_string($id)) {
+        if (! is_string($id) || ! is_string($type)) {
             return;
         }
 
         $recorded = StripeEvent::query()->insertOrIgnore([
             'id' => $id,
-            'type' => (string) ($event->payload['type'] ?? ''),
+            'type' => $type,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -31,6 +32,9 @@ final class HandleStripeWebhook
             return;
         }
 
-        ProcessStripeEvent::dispatch($event->payload);
+        $data = $event->payload['data'] ?? null;
+        $object = is_array($data) && is_array($data['object'] ?? null) ? $data['object'] : [];
+
+        ProcessStripeEvent::dispatch($id, $type, $object);
     }
 }

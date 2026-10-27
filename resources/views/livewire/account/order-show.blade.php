@@ -45,10 +45,10 @@
             <div class="text-sm">
                 <p class="font-display text-2xl font-bold">Adresse de livraison</p>
                 <address class="mt-3 not-italic leading-relaxed">
-                    {{ $order->shipping_address['first_name'] }} {{ $order->shipping_address['last_name'] }}<br>
-                    {{ $order->shipping_address['line1'] }}<br>
-                    @if ($order->shipping_address['line2']){{ $order->shipping_address['line2'] }}<br>@endif
-                    {{ $order->shipping_address['postal_code'] }} {{ $order->shipping_address['city'] }}
+                    {{ $order->shipping_address->fullName() }}<br>
+                    {{ $order->shipping_address->line1 }}<br>
+                    @if ($order->shipping_address->line2){{ $order->shipping_address->line2 }}<br>@endif
+                    {{ $order->shipping_address->postalCode }} {{ $order->shipping_address->city }}
                 </address>
             </div>
 

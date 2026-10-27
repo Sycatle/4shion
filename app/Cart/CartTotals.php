@@ -5,6 +5,7 @@ namespace App\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 final readonly class CartTotals
 {
@@ -24,16 +25,16 @@ final readonly class CartTotals
     public static function calculate(Collection $items, ?Coupon $coupon): self
     {
         $subtotal = $items->sum(fn (CartItem $item) => $item->variant->price() * $item->quantity);
-        $itemCount = $items->sum('quantity');
+        $itemCount = $items->sum(fn (CartItem $item): int => $item->quantity);
 
         $discount = $coupon !== null && $coupon->isUsable() && $coupon->meetsMinimum($subtotal)
             ? $coupon->discountFor($subtotal)
             : 0;
 
         $discounted = $subtotal - $discount;
-        $shipping = $itemCount === 0 || $discounted >= config('shop.shipping.free_threshold')
+        $shipping = $itemCount === 0 || $discounted >= Config::integer('shop.shipping.free_threshold')
             ? 0
-            : config('shop.shipping.flat_rate');
+            : Config::integer('shop.shipping.flat_rate');
 
         return new self($itemCount, $subtotal, $discount, $shipping, $discounted + $shipping);
     }

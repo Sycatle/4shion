@@ -44,10 +44,10 @@
         <tr>
             <td>
                 <p class="muted" style="margin: 0 0 4px;">FACTURÉ À</p>
-                {{ $shipping['first_name'] }} {{ $shipping['last_name'] }}<br>
-                {{ $shipping['line1'] }}<br>
-                @if ($shipping['line2']){{ $shipping['line2'] }}<br>@endif
-                {{ $shipping['postal_code'] }} {{ $shipping['city'] }}
+                {{ $shipping->fullName() }}<br>
+                {{ $shipping->line1 }}<br>
+                @if ($shipping->line2){{ $shipping->line2 }}<br>@endif
+                {{ $shipping->postalCode }} {{ $shipping->city }}
             </td>
             <td class="right">
                 <p class="muted" style="margin: 0 0 4px;">PAIEMENT</p>

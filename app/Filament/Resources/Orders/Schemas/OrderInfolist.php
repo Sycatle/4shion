@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
+use App\Data\ShippingAddress;
 use App\Enums\OrderStatus;
+use App\Models\Order;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -47,14 +49,14 @@ class OrderInfolist
                     ->components([
                         TextEntry::make('shipping_address')
                             ->hiddenLabel()
-                            ->state(fn ($record): string => self::formatAddress($record->shipping_address))
+                            ->state(fn (Order $record): string => self::formatAddress($record->shipping_address))
                             ->html(),
                     ]),
                 Section::make('Facturation')
                     ->components([
                         TextEntry::make('billing_address')
                             ->hiddenLabel()
-                            ->state(fn ($record): string => self::formatAddress($record->billing_address))
+                            ->state(fn (Order $record): string => self::formatAddress($record->billing_address))
                             ->html(),
                     ]),
                 Section::make('Montants')
@@ -63,7 +65,7 @@ class OrderInfolist
                     ->components([
                         TextEntry::make('subtotal')->label('Sous-total')->money('EUR', divideBy: 100),
                         TextEntry::make('discount_total')
-                            ->label(fn ($record): string => $record->coupon_code ? "Remise ({$record->coupon_code})" : 'Remise')
+                            ->label(fn (Order $record): string => $record->coupon_code !== null ? "Remise ({$record->coupon_code})" : 'Remise')
                             ->money('EUR', divideBy: 100),
                         TextEntry::make('shipping_total')->label('Livraison')->money('EUR', divideBy: 100),
                         TextEntry::make('total')->label('Total TTC')->money('EUR', divideBy: 100)->weight('bold'),
@@ -71,16 +73,15 @@ class OrderInfolist
             ]);
     }
 
-    /** @param  array<string, string|null>  $address */
-    private static function formatAddress(array $address): string
+    private static function formatAddress(ShippingAddress $address): string
     {
         return collect([
-            trim(($address['first_name'] ?? '').' '.($address['last_name'] ?? '')),
-            $address['line1'] ?? null,
-            $address['line2'] ?? null,
-            trim(($address['postal_code'] ?? '').' '.($address['city'] ?? '')),
-            $address['country'] ?? null,
-            $address['phone'] ?? null,
+            $address->fullName(),
+            $address->line1,
+            $address->line2,
+            "{$address->postalCode} {$address->city}",
+            $address->country,
+            $address->phone,
         ])->filter()->map(fn (string $line): string => e($line))->implode('<br>');
     }
 }

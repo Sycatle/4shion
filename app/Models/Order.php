@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Data\ShippingAddress;
 use App\Enums\OrderStatus;
 use App\Exceptions\Orders\InvalidOrderTransition;
 use Database\Factories\OrderFactory;
@@ -11,6 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Non-nullable foreign keys: these relations are always present.
+ *
+ * @property-read User $user
+ * @property ShippingAddress $shipping_address
+ * @property ShippingAddress $billing_address
+ */
 #[Fillable([
     'number', 'user_id', 'status', 'subtotal', 'discount_total', 'shipping_total', 'total', 'vat_rate', 'vat_total', 'currency',
     'coupon_id', 'coupon_code', 'shipping_address', 'billing_address',
@@ -31,8 +39,8 @@ class Order extends Model
             'total' => 'integer',
             'vat_rate' => 'decimal:2',
             'vat_total' => 'integer',
-            'shipping_address' => 'array',
-            'billing_address' => 'array',
+            'shipping_address' => ShippingAddress::class,
+            'billing_address' => ShippingAddress::class,
             'paid_at' => 'datetime',
             'shipped_at' => 'datetime',
         ];

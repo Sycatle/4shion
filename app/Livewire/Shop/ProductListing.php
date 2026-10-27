@@ -97,16 +97,20 @@ class ProductListing extends Component
     #[Computed]
     public function availableSizes(): Collection
     {
-        return ProductVariant::query()->distinct()->pluck('size')
+        return ProductVariant::query()->distinct()->get(['size'])
+            ->map(fn (ProductVariant $variant): string => $variant->size)
             ->sortBy(fn (string $size) => array_search($size, self::SIZE_ORDER, true))
-            ->values();
+            ->values()
+            ->toBase();
     }
 
     /** @return Collection<string, string|null> color name => hex */
     #[Computed]
     public function availableColors(): Collection
     {
-        return ProductVariant::query()->select('color', 'color_hex')->distinct()->orderBy('color')->pluck('color_hex', 'color');
+        return ProductVariant::query()->select('color', 'color_hex')->distinct()->orderBy('color')->get()
+            ->mapWithKeys(fn (ProductVariant $variant) => [$variant->color => $variant->color_hex])
+            ->toBase();
     }
 
     public function render(): View

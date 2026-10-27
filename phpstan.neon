@@ -6,5 +6,5 @@ parameters:
         - app
         - database
         - routes
-    level: 6
+    level: max
     parseModelCastsMethod: true

@@ -21,19 +21,26 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Override;
 
 final class CouponResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Coupon::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
 
+    #[Override]
     protected static ?string $modelLabel = 'code promo';
 
+    #[Override]
     protected static ?string $pluralModelLabel = 'codes promo';
 
+    #[Override]
     protected static ?string $recordTitleAttribute = 'code';
 
+    #[Override]
     protected static ?int $navigationSort = 30;
 
     public static function form(Schema $schema): Schema

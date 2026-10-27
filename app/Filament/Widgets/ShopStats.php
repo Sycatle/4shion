@@ -8,11 +8,14 @@ use App\Enums\OrderStatus;
 use App\Models\Order;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Override;
 
 final class ShopStats extends StatsOverviewWidget
 {
+    #[Override]
     protected static ?int $sort = 1;
 
+    #[Override]
     protected ?string $heading = 'Les 30 derniers jours';
 
     protected function getStats(): array

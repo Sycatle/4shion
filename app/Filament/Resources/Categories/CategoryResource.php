@@ -18,21 +18,29 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Override;
 
 final class CategoryResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Category::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    #[Override]
     protected static ?string $modelLabel = 'catégorie';
 
+    #[Override]
     protected static ?string $pluralModelLabel = 'catégories';
 
+    #[Override]
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     protected static ?string $recordRouteKeyName = 'id';
 
+    #[Override]
     protected static ?int $navigationSort = 20;
 
     public static function form(Schema $schema): Schema

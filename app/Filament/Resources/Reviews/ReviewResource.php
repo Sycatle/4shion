@@ -23,17 +23,23 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Override;
 
 final class ReviewResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Review::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedStar;
 
+    #[Override]
     protected static ?string $modelLabel = 'avis';
 
+    #[Override]
     protected static ?string $pluralModelLabel = 'avis';
 
+    #[Override]
     protected static ?int $navigationSort = 40;
 
     public static function getNavigationBadge(): ?string

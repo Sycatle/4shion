@@ -11,11 +11,14 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
+use Override;
 
 final class LowStockVariants extends TableWidget
 {
+    #[Override]
     protected static ?int $sort = 2;
 
+    #[Override]
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table

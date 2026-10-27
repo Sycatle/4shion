@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 /**
  * Inbox of received Stripe events, keyed by the Stripe event id to drop redeliveries.
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 #[WithoutIncrementing]
 class StripeEvent extends Model
 {
+    #[Override]
     protected $keyType = 'string';
 
     protected function casts(): array

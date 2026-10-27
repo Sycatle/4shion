@@ -14,12 +14,14 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
+use Override;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 /** @property Order $record */
 final class ViewOrder extends ViewRecord
 {
+    #[Override]
     protected static string $resource = OrderResource::class;
 
     protected function getHeaderActions(): array

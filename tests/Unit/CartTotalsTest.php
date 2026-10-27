@@ -20,9 +20,9 @@ function cartLines(array $lines): Collection
 {
     return collect($lines)->map(function (array $line): CartItem {
         [$price, $quantity] = $line;
-        $variant = (new ProductVariant(['price_override' => null]))->setRelation('product', new Product(['base_price' => $price]));
+        $variant = new ProductVariant(['price_override' => null])->setRelation('product', new Product(['base_price' => $price]));
 
-        return (new CartItem(['quantity' => $quantity]))->setRelation('variant', $variant);
+        return new CartItem(['quantity' => $quantity])->setRelation('variant', $variant);
     });
 }
 

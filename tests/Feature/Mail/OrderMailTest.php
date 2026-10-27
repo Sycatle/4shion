@@ -35,13 +35,13 @@ it('sends the confirmation only once when payment is reported twice', function (
 it('renders the confirmation email', function (): void {
     $order = pendingOrder(User::factory()->create());
 
-    (new OrderConfirmation($order))->assertSeeInHtml($order->number)->assertSeeInHtml('Total TTC');
+    new OrderConfirmation($order)->assertSeeInHtml($order->number)->assertSeeInHtml('Total TTC');
 });
 
 it('attaches the invoice PDF to the confirmation', function (): void {
     $order = pendingOrder(User::factory()->create());
 
-    $attachments = (new OrderConfirmation($order))->attachments();
+    $attachments = new OrderConfirmation($order)->attachments();
 
     expect($attachments)->toHaveCount(1)
         ->and($attachments[0]->as)->toBe("facture-{$order->number}.pdf")
@@ -59,5 +59,5 @@ it('queues a shipping email when an order is shipped', function (): void {
 it('renders the shipping email in French', function (): void {
     $order = Order::factory()->paid()->create();
 
-    (new OrderShippedNotice($order))->assertSeeInHtml('en route')->assertSeeInHtml($order->number);
+    new OrderShippedNotice($order)->assertSeeInHtml('en route')->assertSeeInHtml($order->number);
 });

@@ -15,19 +15,26 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
 final class OrderResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Order::class;
 
+    #[Override]
     protected static ?string $recordRouteKeyName = 'id';
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
+    #[Override]
     protected static ?string $modelLabel = 'commande';
 
+    #[Override]
     protected static ?string $recordTitleAttribute = 'number';
 
+    #[Override]
     protected static ?int $navigationSort = 10;
 
     public static function canCreate(): bool

@@ -7,9 +7,11 @@ namespace App\Filament\Resources\Products\Pages;
 use App\Filament\Resources\Products\ProductResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Override;
 
 final class EditProduct extends EditRecord
 {
+    #[Override]
     protected static string $resource = ProductResource::class;
 
     protected function getHeaderActions(): array

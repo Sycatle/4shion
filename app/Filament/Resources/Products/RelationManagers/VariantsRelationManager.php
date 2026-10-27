@@ -17,13 +17,17 @@ use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
+use Override;
 
 final class VariantsRelationManager extends RelationManager
 {
+    #[Override]
     protected static string $relationship = 'variants';
 
+    #[Override]
     protected static ?string $title = 'Variantes';
 
+    #[Override]
     protected static ?string $modelLabel = 'variante';
 
     public function form(Schema $schema): Schema

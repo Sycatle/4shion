@@ -16,22 +16,30 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
 final class ProductResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Product::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
+    #[Override]
     protected static ?string $modelLabel = 'produit';
 
+    #[Override]
     protected static ?string $pluralModelLabel = 'produits';
 
+    #[Override]
     protected static ?string $recordTitleAttribute = 'name';
 
     // Slugs are editable, so records are addressed by id in admin URLs.
+    #[Override]
     protected static ?string $recordRouteKeyName = 'id';
 
+    #[Override]
     protected static ?int $navigationSort = 10;
 
     public static function form(Schema $schema): Schema

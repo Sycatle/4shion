@@ -2,15 +2,18 @@
 
 use App\Actions\Orders\MarkOrderPaid;
 use App\Enums\OrderStatus;
+use App\Jobs\ProcessStripeEvent;
 use App\Models\Order;
+use App\Models\StripeEvent;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\TestResponse;
 
-function webhook(string $type, array $object, ?string $secret = 'whsec_test'): TestResponse
+function webhook(string $type, array $object, ?string $secret = 'whsec_test', ?string $eventId = null): TestResponse
 {
     config(['cashier.webhook.secret' => 'whsec_test']);
 
-    $payload = json_encode(['id' => 'evt_'.uniqid(), 'type' => $type, 'data' => ['object' => $object]]);
+    $payload = json_encode(['id' => $eventId ?? 'evt_'.uniqid(), 'type' => $type, 'data' => ['object' => $object]]);
     $timestamp = time();
     $signature = hash_hmac('sha256', "{$timestamp}.{$payload}", (string) $secret);
 
@@ -57,6 +60,27 @@ it('is idempotent when Stripe redelivers the event', function () {
 
     expect($order->fresh()->status)->toBe(OrderStatus::Paid)
         ->and($order->fresh()->paid_at->equalTo($paidAt))->toBeTrue();
+});
+
+it('processes a redelivered event only once', function () {
+    Queue::fake();
+    $session = ['id' => 'cs_live_1', 'payment_status' => 'paid', 'amount_total' => 100, 'payment_intent' => 'pi_abc'];
+
+    webhook('checkout.session.completed', $session, eventId: 'evt_same')->assertOk();
+    webhook('checkout.session.completed', $session, eventId: 'evt_same')->assertOk();
+
+    Queue::assertPushed(ProcessStripeEvent::class, 1);
+    expect(StripeEvent::query()->find('evt_same')?->type)->toBe('checkout.session.completed');
+});
+
+it('marks the event as processed once handled', function () {
+    $order = orderWithSession();
+
+    webhook('checkout.session.completed', [
+        'id' => 'cs_live_1', 'payment_status' => 'paid', 'amount_total' => $order->total, 'payment_intent' => 'pi_abc',
+    ], eventId: 'evt_done')->assertOk();
+
+    expect(StripeEvent::query()->find('evt_done')?->processed_at)->not->toBeNull();
 });
 
 it('ignores a payment whose amount does not match the order', function () {

@@ -7,7 +7,9 @@ use App\Actions\Orders\MarkOrderPaid;
 use App\Cart\CartManager;
 use App\Enums\OrderStatus;
 use App\Events\OrderPaid;
+use App\Exceptions\Orders\InvalidOrderTransition;
 use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
@@ -79,4 +81,11 @@ it('marks an order as paid only once', function () {
         ->and($order->fresh()->paid_at)->not->toBeNull()
         ->and($coupon->fresh()->used_count)->toBe(1);
     Event::assertDispatchedTimes(OrderPaid::class, 1);
+});
+
+it('refuses a transition outside the order lifecycle', function () {
+    $order = Order::factory()->create();
+
+    expect(fn () => $order->transitionTo(OrderStatus::Shipped))->toThrow(InvalidOrderTransition::class)
+        ->and($order->fresh()->status)->toBe(OrderStatus::Pending);
 });

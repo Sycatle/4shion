@@ -15,11 +15,11 @@ class MarkOrderShipped
         $shipped = DB::transaction(function () use ($order): bool {
             $order = Order::query()->lockForUpdate()->findOrFail($order->id);
 
-            if ($order->status !== OrderStatus::Paid) {
+            if (! $order->status->canTransitionTo(OrderStatus::Shipped)) {
                 return false;
             }
 
-            $order->update(['status' => OrderStatus::Shipped, 'shipped_at' => now()]);
+            $order->transitionTo(OrderStatus::Shipped, ['shipped_at' => now()]);
 
             return true;
         });

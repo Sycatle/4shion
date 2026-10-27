@@ -26,7 +26,7 @@ class CancelOrder
         $cancelled = DB::transaction(function () use ($order): bool {
             $order = Order::query()->lockForUpdate()->findOrFail($order->id);
 
-            if ($order->status !== OrderStatus::Pending) {
+            if (! $order->status->canTransitionTo(OrderStatus::Cancelled)) {
                 return false;
             }
 
@@ -36,7 +36,7 @@ class CancelOrder
                 $item->variant?->increment('stock', $item->quantity);
             }
 
-            $order->update(['status' => OrderStatus::Cancelled]);
+            $order->transitionTo(OrderStatus::Cancelled);
 
             return true;
         });

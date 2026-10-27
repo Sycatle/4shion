@@ -33,6 +33,27 @@ enum OrderStatus: string
         };
     }
 
+    /**
+     * Allowed lifecycle moves. Cancelled and Refunded are terminal.
+     *
+     * @return list<self>
+     */
+    public function transitions(): array
+    {
+        return match ($this) {
+            self::Pending => [self::Paid, self::Cancelled],
+            self::Paid => [self::Shipped, self::Refunded],
+            self::Shipped => [self::Delivered, self::Refunded],
+            self::Delivered => [self::Refunded],
+            self::Cancelled, self::Refunded => [],
+        };
+    }
+
+    public function canTransitionTo(self $target): bool
+    {
+        return in_array($target, $this->transitions(), true);
+    }
+
     /** Statuses for which stock has been committed and payment received. */
     public function isPaid(): bool
     {

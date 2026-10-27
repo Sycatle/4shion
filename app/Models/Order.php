@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Exceptions\Orders\InvalidOrderTransition;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,6 +57,23 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Move the order to another status, enforcing the lifecycle defined by OrderStatus.
+     * Callers that must stay idempotent check canTransitionTo() first.
+     *
+     * @param  array<string, mixed>  $attributes  extra columns to persist with the transition
+     *
+     * @throws InvalidOrderTransition
+     */
+    public function transitionTo(OrderStatus $target, array $attributes = []): void
+    {
+        if (! $this->status->canTransitionTo($target)) {
+            throw InvalidOrderTransition::for($this, $target);
+        }
+
+        $this->update(['status' => $target, ...$attributes]);
     }
 
     /**

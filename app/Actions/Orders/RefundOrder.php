@@ -2,6 +2,7 @@
 
 namespace App\Actions\Orders;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Payments\CheckoutGateway;
 use LogicException;
@@ -17,7 +18,7 @@ class RefundOrder
      */
     public function __invoke(Order $order): void
     {
-        if (! $order->status->isPaid() || $order->stripe_payment_intent === null) {
+        if (! $order->status->canTransitionTo(OrderStatus::Refunded) || $order->stripe_payment_intent === null) {
             throw new LogicException("Order {$order->number} cannot be refunded.");
         }
 

@@ -19,12 +19,11 @@ class MarkOrderPaid
         $marked = DB::transaction(function () use ($order, $paymentIntent): bool {
             $order = Order::query()->lockForUpdate()->findOrFail($order->id);
 
-            if ($order->status->isPaid()) {
+            if (! $order->status->canTransitionTo(OrderStatus::Paid)) {
                 return false;
             }
 
-            $order->update([
-                'status' => OrderStatus::Paid,
+            $order->transitionTo(OrderStatus::Paid, [
                 'paid_at' => now(),
                 'stripe_payment_intent' => $paymentIntent ?? $order->stripe_payment_intent,
             ]);

@@ -27,7 +27,7 @@ class ViewOrder extends ViewRecord
                 ->label('Marquer expédiée')
                 ->icon(Heroicon::OutlinedTruck)
                 ->color('info')
-                ->visible(fn (): bool => $this->record->status === OrderStatus::Paid)
+                ->visible(fn (): bool => $this->record->status->canTransitionTo(OrderStatus::Shipped))
                 ->requiresConfirmation()
                 ->modalDescription('Le client recevra un email de confirmation d’expédition.')
                 ->action(function (MarkOrderShipped $markOrderShipped): void {
@@ -38,10 +38,10 @@ class ViewOrder extends ViewRecord
                 ->label('Marquer livrée')
                 ->icon(Heroicon::OutlinedCheckCircle)
                 ->color('success')
-                ->visible(fn (): bool => $this->record->status === OrderStatus::Shipped)
+                ->visible(fn (): bool => $this->record->status->canTransitionTo(OrderStatus::Delivered))
                 ->requiresConfirmation()
                 ->action(function (): void {
-                    $this->record->update(['status' => OrderStatus::Delivered]);
+                    $this->record->transitionTo(OrderStatus::Delivered);
                     $this->refreshRecord();
                 }),
             Action::make('invoice')
@@ -57,7 +57,7 @@ class ViewOrder extends ViewRecord
                 ->label('Rembourser')
                 ->icon(Heroicon::OutlinedReceiptRefund)
                 ->color('danger')
-                ->visible(fn (): bool => $this->record->status->isPaid())
+                ->visible(fn (): bool => $this->record->status->canTransitionTo(OrderStatus::Refunded))
                 ->requiresConfirmation()
                 ->modalHeading('Rembourser la commande ?')
                 ->modalDescription('Le montant total sera remboursé au client et les articles remis en stock. Cette action est irréversible.')

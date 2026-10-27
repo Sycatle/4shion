@@ -17,7 +17,7 @@ class MarkOrderRefunded
         return DB::transaction(function () use ($order): bool {
             $order = Order::query()->lockForUpdate()->findOrFail($order->id);
 
-            if (! $order->status->isPaid()) {
+            if (! $order->status->canTransitionTo(OrderStatus::Refunded)) {
                 return false;
             }
 
@@ -27,7 +27,7 @@ class MarkOrderRefunded
                 $item->variant?->increment('stock', $item->quantity);
             }
 
-            $order->update(['status' => OrderStatus::Refunded]);
+            $order->transitionTo(OrderStatus::Refunded);
 
             return true;
         });

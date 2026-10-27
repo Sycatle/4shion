@@ -52,7 +52,9 @@ final class ViewOrder extends ViewRecord
                 ->color('gray')
                 ->visible(fn (): bool => $this->record->status->isPaid() || $this->record->status === OrderStatus::Refunded)
                 ->action(fn (GenerateInvoice $generateInvoice): StreamedResponse => response()->streamDownload(
-                    fn (): int => print ($generateInvoice($this->record)->output()),
+                    function () use ($generateInvoice): void {
+                        echo $generateInvoice($this->record)->output();
+                    },
                     GenerateInvoice::filename($this->record),
                 )),
             Action::make('refund')

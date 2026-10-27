@@ -85,7 +85,7 @@
         @endif
         <tr><td>Livraison</td><td class="right">{{ $order->shipping_total === 0 ? 'Offerte' : Money::format($order->shipping_total) }}</td></tr>
         <tr class="grand"><td>Total TTC</td><td class="right">{{ Money::format($order->total) }}</td></tr>
-        <tr><td class="muted">dont TVA ({{ config('shop.vat_rate') }} %)</td><td class="right muted">{{ Money::format($order->vatTotal()) }}</td></tr>
+        <tr><td class="muted">dont TVA ({{ \Illuminate\Support\Number::format((float) $order->vat_rate, locale: 'fr') }} %)</td><td class="right muted">{{ Money::format($order->vat_total) }}</td></tr>
     </table>
 
     <p class="footer">{{ $company['name'] }} · SIRET {{ $company['siret'] }} · TVA {{ $company['vat_number'] }} · {{ $company['email'] }}</p>

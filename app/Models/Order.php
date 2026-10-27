@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'number', 'user_id', 'status', 'subtotal', 'discount_total', 'shipping_total', 'total', 'currency',
+    'number', 'user_id', 'status', 'subtotal', 'discount_total', 'shipping_total', 'total', 'vat_rate', 'vat_total', 'currency',
     'coupon_id', 'coupon_code', 'shipping_address', 'billing_address',
     'stripe_session_id', 'stripe_payment_intent', 'paid_at', 'shipped_at',
 ])]
@@ -29,6 +29,8 @@ class Order extends Model
             'discount_total' => 'integer',
             'shipping_total' => 'integer',
             'total' => 'integer',
+            'vat_rate' => 'decimal:2',
+            'vat_total' => 'integer',
             'shipping_address' => 'array',
             'billing_address' => 'array',
             'paid_at' => 'datetime',
@@ -77,13 +79,11 @@ class Order extends Model
     }
 
     /**
-     * VAT contained in the (tax-inclusive) total, in cents.
+     * VAT contained in a tax-inclusive amount, in cents.
      */
-    public function vatTotal(): int
+    public static function vatIncludedIn(int $total, float $rate): int
     {
-        $excludingTax = (int) round($this->total / (1 + config('shop.vat_rate') / 100));
-
-        return $this->total - $excludingTax;
+        return $total - (int) round($total / (1 + $rate / 100));
     }
 
     /**

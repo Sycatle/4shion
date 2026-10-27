@@ -26,6 +26,8 @@ class OrderFactory extends Factory
             'discount_total' => 0,
             'shipping_total' => 490,
             'total' => $subtotal + 490,
+            'vat_rate' => 20,
+            'vat_total' => fn (array $attributes) => Order::vatIncludedIn($attributes['total'], (float) $attributes['vat_rate']),
             'currency' => 'EUR',
             'shipping_address' => $address,
             'billing_address' => $address,

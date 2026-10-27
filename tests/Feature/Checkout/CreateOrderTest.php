@@ -19,6 +19,8 @@ it('creates a pending order, snapshots the items and reserves the stock', functi
         ->and($order->subtotal)->toBe(8000)
         ->and($order->shipping_total)->toBe(490)
         ->and($order->total)->toBe(8490)
+        ->and($order->vat_rate)->toBe('20.00')
+        ->and($order->vat_total)->toBe(1415)
         ->and($order->items)->toHaveCount(1)
         ->and($order->items->first()->product_name)->toBe($variant->product->name)
         ->and($order->items->first()->unit_price)->toBe(4000)

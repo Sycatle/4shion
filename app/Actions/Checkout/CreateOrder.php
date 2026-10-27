@@ -49,6 +49,7 @@ class CreateOrder
 
             $coupon = $this->cart->coupon();
             $totals = CartTotals::calculate($items, $coupon);
+            $vatRate = (float) config('shop.vat_rate');
 
             $order = Order::create([
                 'number' => 'PENDING-'.Str::uuid(),
@@ -58,6 +59,8 @@ class CreateOrder
                 'discount_total' => $totals->discount,
                 'shipping_total' => $totals->shipping,
                 'total' => $totals->total,
+                'vat_rate' => $vatRate,
+                'vat_total' => Order::vatIncludedIn($totals->total, $vatRate),
                 'currency' => config('shop.currency'),
                 'coupon_id' => $totals->discount > 0 ? $coupon?->id : null,
                 'coupon_code' => $totals->discount > 0 ? $coupon?->code : null,

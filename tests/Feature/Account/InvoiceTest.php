@@ -19,9 +19,19 @@ function paidOrderWithItem(?User $user = null): Order
 }
 
 it('computes the VAT contained in a tax-inclusive total', function () {
-    $order = Order::factory()->make(['total' => 12000]);
+    expect(Order::vatIncludedIn(12000, 20))->toBe(2000)
+        ->and(Order::vatIncludedIn(10550, 5.5))->toBe(550);
+});
 
-    expect($order->vatTotal())->toBe(2000);
+it('keeps the VAT rate of the purchase on the invoice when the configured rate changes', function () {
+    $user = User::factory()->create();
+    $order = paidOrderWithItem($user);
+    config(['shop.vat_rate' => 5.5]);
+
+    $html = view('invoices.invoice', ['order' => $order->load('items', 'user')])->render();
+
+    expect($html)->toContain('dont TVA (20 %)')
+        ->and($order->vat_total)->toBe(1483);
 });
 
 it('lets the owner download the invoice of a paid order', function () {

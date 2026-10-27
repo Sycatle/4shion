@@ -16,7 +16,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table): void {
             $table->decimal('vat_rate', 5, 2)->nullable()->after('total');
             $table->unsignedInteger('vat_total')->nullable()->after('vat_rate');
         });
@@ -25,7 +25,7 @@ return new class extends Migration
         $rate = Config::float('shop.vat_rate');
         DB::update('UPDATE orders SET vat_rate = ?, vat_total = total - ROUND(total / CAST(? AS numeric))', [$rate, 1 + $rate / 100]);
 
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table): void {
             $table->decimal('vat_rate', 5, 2)->nullable(false)->change();
             $table->unsignedInteger('vat_total')->nullable(false)->change();
         });
@@ -41,7 +41,7 @@ return new class extends Migration
             DB::statement('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_vat_check');
         }
 
-        Schema::table('orders', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table): void {
             $table->dropColumn(['vat_rate', 'vat_total']);
         });
     }

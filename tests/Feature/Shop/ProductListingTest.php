@@ -8,7 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Livewire\Livewire;
 
-it('lists only active products', function () {
+it('lists only active products', function (): void {
     Product::factory()->create(['name' => 'Hoodie Visible']);
     Product::factory()->inactive()->create(['name' => 'Hoodie Caché']);
 
@@ -17,7 +17,7 @@ it('lists only active products', function () {
         ->assertDontSee('Hoodie Caché');
 });
 
-it('filters by category', function () {
+it('filters by category', function (): void {
     $hoodies = Category::factory()->create(['slug' => 'hoodies']);
     Product::factory()->for($hoodies)->create(['name' => 'Produit Hoodie']);
     Product::factory()->create(['name' => 'Produit Autre']);
@@ -28,7 +28,7 @@ it('filters by category', function () {
         ->assertDontSee('Produit Autre');
 });
 
-it('filters by size and color', function () {
+it('filters by size and color', function (): void {
     $match = Product::factory()->create(['name' => 'Produit Match']);
     ProductVariant::factory()->for($match)->create(['size' => 'M', 'color' => 'Noir']);
 
@@ -42,7 +42,7 @@ it('filters by size and color', function () {
         ->assertDontSee('Produit Autre');
 });
 
-it('filters by price range expressed in euros', function () {
+it('filters by price range expressed in euros', function (): void {
     Product::factory()->create(['name' => 'Produit Cher', 'base_price' => 20000]);
     Product::factory()->create(['name' => 'Produit Abordable', 'base_price' => 3000]);
 
@@ -52,7 +52,7 @@ it('filters by price range expressed in euros', function () {
         ->assertDontSee('Produit Cher');
 });
 
-it('sorts by price', function () {
+it('sorts by price', function (): void {
     Product::factory()->create(['name' => 'Produit B', 'base_price' => 9000]);
     Product::factory()->create(['name' => 'Produit A', 'base_price' => 3000]);
 
@@ -61,7 +61,7 @@ it('sorts by price', function () {
         ->assertSeeInOrder(['Produit A', 'Produit B']);
 });
 
-it('searches products with Scout', function () {
+it('searches products with Scout', function (): void {
     Product::factory()->create(['name' => 'Hoodie Atlas', 'description' => 'Molleton épais']);
     Product::factory()->create(['name' => 'Casquette Signal', 'description' => 'Coton']);
 

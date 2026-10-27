@@ -53,7 +53,7 @@ final class ProductShow extends Component
 
         $this->product = $product->load(['category', 'media']);
         // Preselect the first color that still has stock.
-        $this->color = $this->variants->sortByDesc(fn (ProductVariant $v) => $v->isInStock())->first()?->color;
+        $this->color = $this->variants->sortByDesc(fn (ProductVariant $v): bool => $v->isInStock())->first()?->color;
     }
 
     public function selectColor(string $color): void
@@ -139,7 +139,7 @@ final class ProductShow extends Component
     #[Computed]
     public function colors(): Collection
     {
-        return $this->variants->unique('color')->mapWithKeys(fn (ProductVariant $v) => [$v->color => $v->color_hex]);
+        return $this->variants->unique('color')->mapWithKeys(fn (ProductVariant $v): array => [$v->color => $v->color_hex]);
     }
 
     /** @return Collection<string, ProductVariant> variants of the selected color keyed by size */

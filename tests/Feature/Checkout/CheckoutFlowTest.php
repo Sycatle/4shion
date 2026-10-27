@@ -10,17 +10,17 @@ use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
-it('requires authentication to check out', function () {
+it('requires authentication to check out', function (): void {
     $this->get(route('checkout'))->assertRedirect(route('login'));
 });
 
-it('sends customers with an empty cart back to the cart', function () {
+it('sends customers with an empty cart back to the cart', function (): void {
     $this->actingAs(User::factory()->create());
 
     Livewire::test(CheckoutPage::class)->assertRedirect(route('cart'));
 });
 
-it('validates the shipping address', function () {
+it('validates the shipping address', function (): void {
     $this->actingAs(User::factory()->create());
     cartWith();
 
@@ -31,7 +31,7 @@ it('validates the shipping address', function () {
         ->assertHasErrors(['firstName', 'line1', 'city', 'postalCode']);
 });
 
-it('creates the order and redirects to the payment page', function () {
+it('creates the order and redirects to the payment page', function (): void {
     fakeGateway();
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -52,7 +52,7 @@ it('creates the order and redirects to the payment page', function () {
         ->and($user->addresses()->sole()->is_default)->toBeTrue();
 });
 
-it('requires the terms to be accepted', function () {
+it('requires the terms to be accepted', function (): void {
     fakeGateway();
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -71,7 +71,7 @@ it('requires the terms to be accepted', function () {
     expect($user->orders()->count())->toBe(0);
 });
 
-it('shows a friendly error when the payment provider is unavailable', function () {
+it('shows a friendly error when the payment provider is unavailable', function (): void {
     fakeGateway()->fails = true;
     $this->actingAs(User::factory()->create());
     cartWith();
@@ -87,7 +87,7 @@ it('shows a friendly error when the payment provider is unavailable', function (
         ->assertSet('error', 'Le paiement est momentanément indisponible. Veuillez réessayer dans quelques instants.');
 });
 
-it('confirms the payment on the success page even if the webhook is late', function () {
+it('confirms the payment on the success page even if the webhook is late', function (): void {
     $gateway = fakeGateway();
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -105,7 +105,7 @@ it('confirms the payment on the success page even if the webhook is late', funct
     expect($order->fresh()->status)->toBe(OrderStatus::Paid);
 });
 
-it('hides other customers orders on the success page', function () {
+it('hides other customers orders on the success page', function (): void {
     fakeGateway();
     $order = pendingOrder(User::factory()->create());
     $order->update(['stripe_session_id' => 'cs_live_1']);
@@ -115,7 +115,7 @@ it('hides other customers orders on the success page', function () {
         ->assertNotFound();
 });
 
-it('restores the cart when the customer cancels the payment', function () {
+it('restores the cart when the customer cancels the payment', function (): void {
     fakeGateway();
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -127,7 +127,7 @@ it('restores the cart when the customer cancels the payment', function () {
         ->and(app(CartManager::class)->count())->toBe(2);
 });
 
-it('does not let a customer cancel someone else\'s order', function () {
+it('does not let a customer cancel someone else\'s order', function (): void {
     fakeGateway();
     $order = pendingOrder(User::factory()->create());
 
@@ -138,7 +138,7 @@ it('does not let a customer cancel someone else\'s order', function () {
     expect($order->fresh()->status)->toBe(OrderStatus::Pending);
 });
 
-it('throttles repeated checkout attempts', function () {
+it('throttles repeated checkout attempts', function (): void {
     fakeGateway();
     $user = User::factory()->create();
     $this->actingAs($user);

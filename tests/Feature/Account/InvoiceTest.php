@@ -18,12 +18,12 @@ function paidOrderWithItem(?User $user = null): Order
     return $order;
 }
 
-it('computes the VAT contained in a tax-inclusive total', function () {
+it('computes the VAT contained in a tax-inclusive total', function (): void {
     expect(Order::vatIncludedIn(12000, 20))->toBe(2000)
         ->and(Order::vatIncludedIn(10550, 5.5))->toBe(550);
 });
 
-it('keeps the VAT rate of the purchase on the invoice when the configured rate changes', function () {
+it('keeps the VAT rate of the purchase on the invoice when the configured rate changes', function (): void {
     $user = User::factory()->create();
     $order = paidOrderWithItem($user);
     config(['shop.vat_rate' => 5.5]);
@@ -34,7 +34,7 @@ it('keeps the VAT rate of the purchase on the invoice when the configured rate c
         ->and($order->vat_total)->toBe(1483);
 });
 
-it('lets the owner download the invoice of a paid order', function () {
+it('lets the owner download the invoice of a paid order', function (): void {
     $user = User::factory()->create();
     $order = paidOrderWithItem($user);
 
@@ -45,14 +45,14 @@ it('lets the owner download the invoice of a paid order', function () {
         ->and($response->baseResponse->getContent())->toStartWith('%PDF');
 });
 
-it('has no invoice for an unpaid order', function () {
+it('has no invoice for an unpaid order', function (): void {
     $user = User::factory()->create();
     $order = Order::factory()->for($user)->create();
 
     $this->actingAs($user)->get(route('account.orders.invoice', $order))->assertNotFound();
 });
 
-it('forbids downloading the invoice of another customer', function () {
+it('forbids downloading the invoice of another customer', function (): void {
     $order = paidOrderWithItem();
 
     $this->actingAs(User::factory()->create())

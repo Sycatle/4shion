@@ -34,11 +34,11 @@ function orderWithSession(): Order
     return $order;
 }
 
-it('rejects webhooks with an invalid signature', function () {
+it('rejects webhooks with an invalid signature', function (): void {
     webhook('checkout.session.completed', ['id' => 'cs_live_1'], secret: 'wrong')->assertForbidden();
 });
 
-it('marks the order as paid on checkout.session.completed', function () {
+it('marks the order as paid on checkout.session.completed', function (): void {
     $order = orderWithSession();
 
     webhook('checkout.session.completed', [
@@ -52,7 +52,7 @@ it('marks the order as paid on checkout.session.completed', function () {
         ->and($order->fresh()->stripe_payment_intent)->toBe('pi_abc');
 });
 
-it('is idempotent when Stripe redelivers the event', function () {
+it('is idempotent when Stripe redelivers the event', function (): void {
     $order = orderWithSession();
     $session = ['id' => 'cs_live_1', 'payment_status' => 'paid', 'amount_total' => $order->total, 'payment_intent' => 'pi_abc'];
 
@@ -64,7 +64,7 @@ it('is idempotent when Stripe redelivers the event', function () {
         ->and($order->fresh()->paid_at->equalTo($paidAt))->toBeTrue();
 });
 
-it('processes a redelivered event only once', function () {
+it('processes a redelivered event only once', function (): void {
     Queue::fake();
     $session = ['id' => 'cs_live_1', 'payment_status' => 'paid', 'amount_total' => 100, 'payment_intent' => 'pi_abc'];
 
@@ -75,7 +75,7 @@ it('processes a redelivered event only once', function () {
     expect(StripeEvent::query()->find('evt_same')?->type)->toBe('checkout.session.completed');
 });
 
-it('marks the event as processed once handled', function () {
+it('marks the event as processed once handled', function (): void {
     $order = orderWithSession();
 
     webhook('checkout.session.completed', [
@@ -85,7 +85,7 @@ it('marks the event as processed once handled', function () {
     expect(StripeEvent::query()->find('evt_done')?->processed_at)->not->toBeNull();
 });
 
-it('ignores a payment whose amount does not match the order', function () {
+it('ignores a payment whose amount does not match the order', function (): void {
     $order = orderWithSession();
 
     webhook('checkout.session.completed', ['id' => 'cs_live_1', 'payment_status' => 'paid', 'amount_total' => 1, 'payment_intent' => 'pi_abc'])->assertOk();
@@ -93,7 +93,7 @@ it('ignores a payment whose amount does not match the order', function () {
     expect($order->fresh()->status)->toBe(OrderStatus::Pending);
 });
 
-it('does not mark unpaid sessions as paid', function () {
+it('does not mark unpaid sessions as paid', function (): void {
     $order = orderWithSession();
 
     webhook('checkout.session.completed', ['id' => 'cs_live_1', 'payment_status' => 'unpaid', 'amount_total' => $order->total])->assertOk();
@@ -101,7 +101,7 @@ it('does not mark unpaid sessions as paid', function () {
     expect($order->fresh()->status)->toBe(OrderStatus::Pending);
 });
 
-it('cancels the order and releases the stock when the session expires', function () {
+it('cancels the order and releases the stock when the session expires', function (): void {
     $order = orderWithSession();
     $variant = $order->items->first()->variant;
     $stockAfterReservation = $variant->fresh()->stock;
@@ -112,7 +112,7 @@ it('cancels the order and releases the stock when the session expires', function
         ->and($variant->fresh()->stock)->toBe($stockAfterReservation + 1);
 });
 
-it('marks a fully refunded order as refunded', function () {
+it('marks a fully refunded order as refunded', function (): void {
     $order = orderWithSession();
     app(MarkOrderPaid::class)($order, 'pi_abc');
 

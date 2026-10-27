@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table): void {
             $table->id();
             $table->string('number')->unique();
             $table->foreignId('user_id')->constrained()->restrictOnDelete();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('order_items', function (Blueprint $table) {
+        Schema::create('order_items', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_variant_id')->nullable()->constrained()->nullOnDelete();

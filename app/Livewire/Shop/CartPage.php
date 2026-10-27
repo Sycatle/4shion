@@ -19,7 +19,7 @@ use Livewire\Component;
 #[Title('Panier')]
 final class CartPage extends Component
 {
-    private const MAX_COUPON_ATTEMPTS_PER_MINUTE = 5;
+    private const int MAX_COUPON_ATTEMPTS_PER_MINUTE = 5;
 
     public string $couponCode = '';
 

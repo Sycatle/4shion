@@ -9,7 +9,7 @@ use App\Models\Order;
 use App\Payments\CheckoutGateway;
 use LogicException;
 
-final class RefundOrder
+final readonly class RefundOrder
 {
     public function __construct(private CheckoutGateway $gateway, private MarkOrderRefunded $markOrderRefunded) {}
 

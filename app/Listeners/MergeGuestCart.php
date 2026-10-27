@@ -8,7 +8,7 @@ use App\Cart\CartManager;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 
-final class MergeGuestCart
+final readonly class MergeGuestCart
 {
     public function __construct(private CartManager $cart) {}
 

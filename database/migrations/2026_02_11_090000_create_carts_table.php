@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->nullable()->unique()->constrained()->cascadeOnDelete();
             $table->uuid('token')->nullable()->unique();
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('cart_items', function (Blueprint $table) {
+        Schema::create('cart_items', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('cart_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_variant_id')->constrained()->cascadeOnDelete();

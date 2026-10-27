@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\OrderStatus;
 
-it('allows only the documented lifecycle moves', function (OrderStatus $from, OrderStatus $to, bool $allowed) {
+it('allows only the documented lifecycle moves', function (OrderStatus $from, OrderStatus $to, bool $allowed): void {
     expect($from->canTransitionTo($to))->toBe($allowed);
 })->with([
     'pending to paid' => [OrderStatus::Pending, OrderStatus::Paid, true],
@@ -17,6 +17,6 @@ it('allows only the documented lifecycle moves', function (OrderStatus $from, Or
     'paid to paid' => [OrderStatus::Paid, OrderStatus::Paid, false],
 ]);
 
-it('treats cancelled and refunded as terminal', function (OrderStatus $status) {
+it('treats cancelled and refunded as terminal', function (OrderStatus $status): void {
     expect($status->transitions())->toBeEmpty();
 })->with([OrderStatus::Cancelled, OrderStatus::Refunded]);

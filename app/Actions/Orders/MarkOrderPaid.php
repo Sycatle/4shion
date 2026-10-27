@@ -38,7 +38,7 @@ final class MarkOrderPaid
         });
 
         if ($marked) {
-            OrderPaid::dispatch($order->refresh());
+            event(new OrderPaid($order->refresh()));
         }
 
         return $marked;

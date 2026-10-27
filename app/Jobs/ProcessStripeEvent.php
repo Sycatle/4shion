@@ -11,20 +11,19 @@ use App\Models\Order;
 use App\Models\StripeEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Attributes\Backoff;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Support\Facades\Log;
 
 /**
  * Applies a Stripe event to the matching order. Every branch relies on idempotent actions,
  * so a retry after a partial failure is safe.
  */
+#[Backoff([10, 60, 300, 900])]
+#[Tries(5)]
 final class ProcessStripeEvent implements ShouldQueue
 {
     use Queueable;
-
-    public int $tries = 5;
-
-    /** @var list<int> */
-    public array $backoff = [10, 60, 300, 900];
 
     /**
      * @param  array<mixed>  $object  the event's `data.object` (a Checkout Session or a Charge)
@@ -51,7 +50,7 @@ final class ProcessStripeEvent implements ShouldQueue
     {
         $order = $this->orderBy('stripe_session_id', 'id');
 
-        if ($order === null || $this->string('payment_status') !== 'paid') {
+        if (! $order instanceof Order || $this->string('payment_status') !== 'paid') {
             return;
         }
 
@@ -74,7 +73,7 @@ final class ProcessStripeEvent implements ShouldQueue
     {
         $order = $this->orderBy('stripe_session_id', 'id');
 
-        if ($order !== null) {
+        if ($order instanceof Order) {
             $cancelOrder($order);
         }
     }
@@ -83,7 +82,7 @@ final class ProcessStripeEvent implements ShouldQueue
     {
         $order = $this->orderBy('stripe_payment_intent', 'payment_intent');
 
-        if ($order !== null && ($this->object['refunded'] ?? false) === true) {
+        if ($order instanceof Order && ($this->object['refunded'] ?? false) === true) {
             $markOrderRefunded($order);
         }
     }

@@ -13,7 +13,7 @@ use App\Payments\CheckoutGateway;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-final class CancelOrder
+final readonly class CancelOrder
 {
     public function __construct(private CartManager $cart, private CheckoutGateway $gateway) {}
 

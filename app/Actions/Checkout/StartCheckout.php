@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Payments\CheckoutGateway;
 use Throwable;
 
-final class StartCheckout
+final readonly class StartCheckout
 {
     public function __construct(
         private CreateOrder $createOrder,

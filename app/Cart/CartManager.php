@@ -21,18 +21,18 @@ use Illuminate\Support\Str;
  */
 final class CartManager
 {
-    public const MAX_QUANTITY_PER_LINE = 10;
+    public const int MAX_QUANTITY_PER_LINE = 10;
 
-    private const SESSION_KEY = 'cart_token';
+    private const string SESSION_KEY = 'cart_token';
 
     private ?Cart $cart = null;
 
-    public function __construct(private Guard $auth, private Session $session) {}
+    public function __construct(private readonly Guard $auth, private readonly Session $session) {}
 
     /** Cart of the current visitor, without creating one. */
     public function find(): ?Cart
     {
-        if ($this->cart !== null) {
+        if ($this->cart instanceof Cart) {
             return $this->cart;
         }
 
@@ -50,7 +50,7 @@ final class CartManager
 
     private function findOrCreate(): Cart
     {
-        if ($cart = $this->find()) {
+        if (($cart = $this->find()) instanceof Cart) {
             return $cart;
         }
 
@@ -127,7 +127,7 @@ final class CartManager
 
         $coupon = Coupon::query()->where('code', Str::upper(trim($code)))->first();
 
-        if ($cart === null || $coupon === null || ! $coupon->isUsable()) {
+        if (! $cart instanceof Cart || $coupon === null || ! $coupon->isUsable()) {
             throw CartException::invalidCoupon();
         }
 

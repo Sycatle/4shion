@@ -10,11 +10,11 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('requires authentication', function () {
+it('requires authentication', function (): void {
     $this->get(route('account.orders'))->assertRedirect(route('login'));
 });
 
-it('lists only the orders of the current customer', function () {
+it('lists only the orders of the current customer', function (): void {
     $user = User::factory()->create();
     $mine = Order::factory()->for($user)->create(['number' => '4SH-2026-000001']);
     Order::factory()->create(['number' => '4SH-2026-000002']);
@@ -24,7 +24,7 @@ it('lists only the orders of the current customer', function () {
         ->assertDontSee('4SH-2026-000002');
 });
 
-it('shows the detail of an order', function () {
+it('shows the detail of an order', function (): void {
     $user = User::factory()->create();
     $order = Order::factory()->for($user)->paid()->create(['number' => '4SH-2026-000010']);
     OrderItem::create([
@@ -38,7 +38,7 @@ it('shows the detail of an order', function () {
         ->assertSee(OrderStatus::Paid->label());
 });
 
-it('forbids viewing the order of another customer', function () {
+it('forbids viewing the order of another customer', function (): void {
     $order = Order::factory()->create();
 
     $this->actingAs(User::factory()->create())
@@ -46,7 +46,7 @@ it('forbids viewing the order of another customer', function () {
         ->assertForbidden();
 });
 
-it('lets an admin view any order', function () {
+it('lets an admin view any order', function (): void {
     $order = Order::factory()->create();
 
     $this->actingAs(User::factory()->create(['is_admin' => true]))
@@ -54,13 +54,13 @@ it('lets an admin view any order', function () {
         ->assertOk();
 });
 
-it('redirects the legacy dashboard route to the orders', function () {
+it('redirects the legacy dashboard route to the orders', function (): void {
     $this->actingAs(User::factory()->create())
         ->get('/dashboard')
         ->assertRedirect('/compte/commandes');
 });
 
-it('lets the customer pay a pending order again', function () {
+it('lets the customer pay a pending order again', function (): void {
     $gateway = fakeGateway();
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -74,7 +74,7 @@ it('lets the customer pay a pending order again', function () {
     expect($order->fresh()->stripe_session_id)->not->toBeNull();
 });
 
-it('does not offer payment for an order that is not pending', function () {
+it('does not offer payment for an order that is not pending', function (): void {
     $user = User::factory()->create();
     $order = Order::factory()->for($user)->paid()->create();
 

@@ -8,11 +8,11 @@ use App\Models\User;
 use Filament\Actions\Testing\TestAction;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
 });
 
-it('shows pending reviews by default', function () {
+it('shows pending reviews by default', function (): void {
     $pending = Review::factory()->pending()->create();
     $published = Review::factory()->create();
 
@@ -21,7 +21,7 @@ it('shows pending reviews by default', function () {
         ->assertCanNotSeeTableRecords([$published]);
 });
 
-it('publishes a review', function () {
+it('publishes a review', function (): void {
     $review = Review::factory()->pending()->create();
 
     Livewire::test(ManageReviews::class)
@@ -30,7 +30,7 @@ it('publishes a review', function () {
     expect($review->fresh()->approved_at)->not->toBeNull();
 });
 
-it('unpublishes a review', function () {
+it('unpublishes a review', function (): void {
     $review = Review::factory()->create();
 
     Livewire::test(ManageReviews::class)

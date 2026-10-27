@@ -21,6 +21,6 @@ final class CheckoutCancelController extends Controller
 
         $cancelOrder($order, restoreCart: true);
 
-        return redirect()->route('cart')->with('status', 'Paiement annulé : votre panier a été restauré.');
+        return to_route('cart')->with('status', 'Paiement annulé : votre panier a été restauré.');
     }
 }

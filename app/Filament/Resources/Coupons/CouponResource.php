@@ -48,7 +48,7 @@ final class CouponResource extends Resource
                     ->dehydrateStateUsing(fn (string $state): string => strtoupper(trim($state))),
                 Select::make('type')
                     ->label('Type de remise')
-                    ->options(collect(DiscountType::cases())->mapWithKeys(fn (DiscountType $type) => [$type->value => $type->label()]))
+                    ->options(collect(DiscountType::cases())->mapWithKeys(fn (DiscountType $type): array => [$type->value => $type->label()]))
                     ->required()
                     ->live()
                     ->default(DiscountType::Percent->value),

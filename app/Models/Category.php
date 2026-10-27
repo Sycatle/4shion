@@ -6,21 +6,18 @@ namespace App\Models;
 
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\RouteKey;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Config;
 
 #[Fillable(['name', 'slug', 'description', 'position'])]
+#[RouteKey('slug')]
 class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
-
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
 
     /** @return array{field: string, ink: string} */
     public function theme(): array

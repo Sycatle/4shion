@@ -37,6 +37,6 @@ final class HandleStripeWebhook
         $data = $event->payload['data'] ?? null;
         $object = is_array($data) && is_array($data['object'] ?? null) ? $data['object'] : [];
 
-        ProcessStripeEvent::dispatch($id, $type, $object);
+        dispatch(new ProcessStripeEvent($id, $type, $object));
     }
 }

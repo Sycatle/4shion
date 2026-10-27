@@ -25,7 +25,7 @@ final class ProductListing extends Component
 {
     use WithPagination;
 
-    private const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'Unique'];
+    private const array SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'Unique'];
 
     #[Url(as: 'q')]
     public string $search = '';
@@ -101,7 +101,7 @@ final class ProductListing extends Component
     {
         return ProductVariant::query()->distinct()->get(['size'])
             ->map(fn (ProductVariant $variant): string => $variant->size)
-            ->sortBy(fn (string $size) => array_search($size, self::SIZE_ORDER, true))
+            ->sortBy(fn (string $size): false|int => array_search($size, self::SIZE_ORDER, true))
             ->values()
             ->toBase();
     }
@@ -111,7 +111,7 @@ final class ProductListing extends Component
     public function availableColors(): Collection
     {
         return ProductVariant::query()->select('color', 'color_hex')->distinct()->orderBy('color')->get()
-            ->mapWithKeys(fn (ProductVariant $variant) => [$variant->color => $variant->color_hex])
+            ->mapWithKeys(fn (ProductVariant $variant): array => [$variant->color => $variant->color_hex])
             ->toBase();
     }
 

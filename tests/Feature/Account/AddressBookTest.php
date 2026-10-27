@@ -17,7 +17,7 @@ function fillAddress($component)
         ->set('city', 'Paris');
 }
 
-it('creates addresses and makes the first one the default', function () {
+it('creates addresses and makes the first one the default', function (): void {
     $user = User::factory()->create();
 
     fillAddress(Livewire::actingAs($user)->test(AddressBook::class)->call('create'))
@@ -27,14 +27,14 @@ it('creates addresses and makes the first one the default', function () {
     expect($user->addresses()->sole()->is_default)->toBeTrue();
 });
 
-it('validates the postal code', function () {
+it('validates the postal code', function (): void {
     fillAddress(Livewire::actingAs(User::factory()->create())->test(AddressBook::class)->call('create'))
         ->set('postalCode', 'ABCDE')
         ->call('save')
         ->assertHasErrors(['postalCode']);
 });
 
-it('edits an address', function () {
+it('edits an address', function (): void {
     $user = User::factory()->create();
     $address = Address::factory()->for($user)->create(['city' => 'Lyon']);
 
@@ -46,7 +46,7 @@ it('edits an address', function () {
     expect($address->fresh()->city)->toBe('Nantes');
 });
 
-it('switches the default address and promotes another one on deletion', function () {
+it('switches the default address and promotes another one on deletion', function (): void {
     $user = User::factory()->create();
     $first = Address::factory()->for($user)->create(['is_default' => true]);
     $second = Address::factory()->for($user)->create();
@@ -58,7 +58,7 @@ it('switches the default address and promotes another one on deletion', function
     expect($first->fresh()->is_default)->toBeTrue();
 });
 
-it('cannot touch the address of another customer', function () {
+it('cannot touch the address of another customer', function (): void {
     $address = Address::factory()->create();
 
     Livewire::actingAs(User::factory()->create())->test(AddressBook::class)

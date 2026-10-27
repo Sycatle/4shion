@@ -12,9 +12,9 @@ use Livewire\Component;
 
 final class SearchOverlay extends Component
 {
-    private const MIN_LENGTH = 2;
+    private const int MIN_LENGTH = 2;
 
-    private const LIMIT = 6;
+    private const int LIMIT = 6;
 
     public string $query = '';
 
@@ -36,7 +36,7 @@ final class SearchOverlay extends Component
             ->with(['media', 'category'])
             ->whereIn('id', $ranking->keys())
             ->get()
-            ->sortBy(fn (Product $product) => $ranking[$product->id])
+            ->sortBy(fn (Product $product): int => (int) $ranking->get($product->id, PHP_INT_MAX))
             ->take(self::LIMIT)
             ->values();
     }

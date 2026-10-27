@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Config;
 
 final class ListProducts
 {
-    private const SEARCH_LIMIT = 200;
+    private const int SEARCH_LIMIT = 200;
 
     /**
      * Active products matching the filters. Full-text matching goes through Scout,

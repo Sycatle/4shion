@@ -27,7 +27,7 @@ final class MarkOrderShipped
         });
 
         if ($shipped) {
-            OrderShipped::dispatch($order->refresh());
+            event(new OrderShipped($order->refresh()));
         }
 
         return $shipped;

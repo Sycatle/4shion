@@ -12,9 +12,9 @@ use Illuminate\Support\Str;
 
 class CatalogSeeder extends Seeder
 {
-    private const CLOTHING_SIZES = ['XS', 'S', 'M', 'L', 'XL'];
+    private const array CLOTHING_SIZES = ['XS', 'S', 'M', 'L', 'XL'];
 
-    private const COLORS = [
+    private const array COLORS = [
         'Noir' => '#111111',
         'Écru' => '#E9E4D8',
         'Anthracite' => '#3A3D40',

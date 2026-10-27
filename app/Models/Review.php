@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\ReviewFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,7 +48,8 @@ class Review extends Model
      * @param  Builder<Review>  $query
      * @return Builder<Review>
      */
-    public function scopeApproved(Builder $query): Builder
+    #[Scope]
+    protected function approved(Builder $query): Builder
     {
         return $query->whereNotNull('approved_at');
     }

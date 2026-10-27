@@ -26,13 +26,13 @@ Route::view('mentions-legales', 'legal.notice')->name('legal.notice');
 Route::view('confidentialite', 'legal.privacy')->name('legal.privacy');
 Route::view('contact', 'legal.contact')->name('contact');
 
-Route::middleware('auth')->prefix('commande')->group(function () {
+Route::middleware('auth')->prefix('commande')->group(function (): void {
     Route::get('/', CheckoutPage::class)->name('checkout');
     Route::get('succes', CheckoutSuccess::class)->name('checkout.success');
     Route::get('annulee/{order:number}', CheckoutCancelController::class)->name('checkout.cancel');
 });
 
-Route::middleware('auth')->prefix('compte')->group(function () {
+Route::middleware('auth')->prefix('compte')->group(function (): void {
     Route::get('commandes', OrderList::class)->name('account.orders');
     Route::get('commandes/{order:number}', OrderShow::class)->name('account.orders.show');
     Route::get('commandes/{order:number}/facture', InvoiceController::class)->name('account.orders.invoice');
@@ -45,7 +45,7 @@ Route::redirect('dashboard', '/compte/commandes')->name('dashboard');
 Route::post('deconnexion', function (Logout $logout) {
     $logout();
 
-    return redirect()->route('home');
+    return to_route('home');
 })->middleware('auth')->name('logout');
 
 require __DIR__.'/auth.php';

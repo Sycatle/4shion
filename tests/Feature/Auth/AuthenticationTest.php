@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use Livewire\Volt\Volt;
 
-test('login screen can be rendered', function () {
+test('login screen can be rendered', function (): void {
     $response = $this->get('/login');
 
     $response
@@ -13,7 +13,7 @@ test('login screen can be rendered', function () {
         ->assertSeeVolt('pages.auth.login');
 });
 
-test('users can authenticate using the login screen', function () {
+test('users can authenticate using the login screen', function (): void {
     $user = User::factory()->create();
 
     $component = Volt::test('pages.auth.login')
@@ -29,7 +29,7 @@ test('users can authenticate using the login screen', function () {
     $this->assertAuthenticated();
 });
 
-test('users can not authenticate with invalid password', function () {
+test('users can not authenticate with invalid password', function (): void {
     $user = User::factory()->create();
 
     $component = Volt::test('pages.auth.login')
@@ -45,7 +45,7 @@ test('users can not authenticate with invalid password', function () {
     $this->assertGuest();
 });
 
-test('the account menu is rendered for authenticated users', function () {
+test('the account menu is rendered for authenticated users', function (): void {
     $this->actingAs(User::factory()->create());
 
     $this->get(route('home'))
@@ -53,7 +53,7 @@ test('the account menu is rendered for authenticated users', function () {
         ->assertSee('Déconnexion');
 });
 
-test('users can logout', function () {
+test('users can logout', function (): void {
     $this->actingAs(User::factory()->create());
 
     $this->post(route('logout'))->assertRedirect(route('home'));
@@ -61,6 +61,6 @@ test('users can logout', function () {
     $this->assertGuest();
 });
 
-test('guests cannot logout', function () {
+test('guests cannot logout', function (): void {
     $this->post(route('logout'))->assertRedirect(route('login'));
 });

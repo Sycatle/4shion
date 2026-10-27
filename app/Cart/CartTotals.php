@@ -26,10 +26,10 @@ final readonly class CartTotals
      */
     public static function calculate(Collection $items, ?Coupon $coupon): self
     {
-        $subtotal = $items->sum(fn (CartItem $item) => $item->variant->price() * $item->quantity);
+        $subtotal = $items->sum(fn (CartItem $item): int => $item->variant->price() * $item->quantity);
         $itemCount = $items->sum(fn (CartItem $item): int => $item->quantity);
 
-        $discount = $coupon !== null && $coupon->isUsable() && $coupon->meetsMinimum($subtotal)
+        $discount = $coupon instanceof Coupon && $coupon->isUsable() && $coupon->meetsMinimum($subtotal)
             ? $coupon->discountFor($subtotal)
             : 0;
 

@@ -10,7 +10,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\User;
 
-it('creates a pending order, snapshots the items and reserves the stock', function () {
+it('creates a pending order, snapshots the items and reserves the stock', function (): void {
     $user = User::factory()->create();
     $variant = cartWith(price: 4000, stock: 5, quantity: 2);
 
@@ -31,7 +31,7 @@ it('creates a pending order, snapshots the items and reserves the stock', functi
         ->and(app(CartManager::class)->count())->toBe(0);
 });
 
-it('stores the coupon applied to the cart', function () {
+it('stores the coupon applied to the cart', function (): void {
     $user = User::factory()->create();
     cartWith(price: 10000);
     Coupon::factory()->create(['code' => 'BIENVENUE10']);
@@ -44,11 +44,11 @@ it('stores the coupon applied to the cart', function () {
         ->and($order->total)->toBe(9490);
 });
 
-it('rejects an empty cart', function () {
+it('rejects an empty cart', function (): void {
     app(CreateOrder::class)(User::factory()->create(), address());
 })->throws(CartException::class, 'Votre panier est vide.');
 
-it('does not create anything when an item ran out of stock', function () {
+it('does not create anything when an item ran out of stock', function (): void {
     $user = User::factory()->create();
     $variant = cartWith(stock: 3, quantity: 3);
     $variant->update(['stock' => 1]); // someone else bought it meanwhile
@@ -60,7 +60,7 @@ it('does not create anything when an item ran out of stock', function () {
         ->and(app(CartManager::class)->count())->toBe(3);
 });
 
-it('rejects products that were deactivated', function () {
+it('rejects products that were deactivated', function (): void {
     $user = User::factory()->create();
     $variant = cartWith();
     $variant->product->update(['is_active' => false]);
@@ -68,7 +68,7 @@ it('rejects products that were deactivated', function () {
     app(CreateOrder::class)($user, address());
 })->throws(CartException::class);
 
-it('sells the last unit only once', function () {
+it('sells the last unit only once', function (): void {
     $variant = cartWith(stock: 1);
     $first = User::factory()->create();
     $second = User::factory()->create();

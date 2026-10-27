@@ -13,7 +13,7 @@ use Stripe\StripeClient;
 final class StripeCheckoutGateway implements CheckoutGateway
 {
     /** Stripe requires a session lifetime between 30 minutes and 24 hours. */
-    private const SESSION_LIFETIME_MINUTES = 30;
+    private const int SESSION_LIFETIME_MINUTES = 30;
 
     public function createSession(Order $order): CheckoutSession
     {
@@ -32,7 +32,7 @@ final class StripeCheckoutGateway implements CheckoutGateway
             'cancel_url' => route('checkout.cancel', $order),
             'metadata' => $metadata,
             'payment_intent_data' => ['metadata' => $metadata],
-            'line_items' => $order->items->map(fn (OrderItem $item) => [
+            'line_items' => $order->items->map(fn (OrderItem $item): array => [
                 'quantity' => $item->quantity,
                 'price_data' => [
                     'currency' => $currency,

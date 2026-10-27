@@ -13,7 +13,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
 });
 
@@ -34,7 +34,7 @@ function adminOrder(OrderStatus $status = OrderStatus::Paid, int $stock = 5, int
     return $order;
 }
 
-it('lists orders and filters them by status', function () {
+it('lists orders and filters them by status', function (): void {
     $paid = Order::factory()->paid()->create();
     $pending = Order::factory()->create();
 
@@ -45,7 +45,7 @@ it('lists orders and filters them by status', function () {
         ->assertCanNotSeeTableRecords([$pending]);
 });
 
-it('displays an order', function () {
+it('displays an order', function (): void {
     $order = adminOrder();
 
     Livewire::test(ViewOrder::class, ['record' => $order->id])
@@ -53,7 +53,7 @@ it('displays an order', function () {
         ->assertSee($order->number);
 });
 
-it('ships a paid order and dispatches an event', function () {
+it('ships a paid order and dispatches an event', function (): void {
     Event::fake([OrderShipped::class]);
     $order = adminOrder();
 
@@ -64,7 +64,7 @@ it('ships a paid order and dispatches an event', function () {
     Event::assertDispatched(OrderShipped::class);
 });
 
-it('only offers delivery for shipped orders', function () {
+it('only offers delivery for shipped orders', function (): void {
     $paid = adminOrder();
     $shipped = adminOrder(OrderStatus::Shipped);
 
@@ -76,7 +76,7 @@ it('only offers delivery for shipped orders', function () {
     expect($shipped->fresh()->status)->toBe(OrderStatus::Delivered);
 });
 
-it('refunds a paid order and restocks the items', function () {
+it('refunds a paid order and restocks the items', function (): void {
     $gateway = fakeGateway();
     $order = adminOrder(stock: 5, quantity: 2);
 
@@ -87,7 +87,7 @@ it('refunds a paid order and restocks the items', function () {
         ->and($order->items->first()->variant->fresh()->stock)->toBe(7);
 });
 
-it('keeps the order untouched when the refund fails', function () {
+it('keeps the order untouched when the refund fails', function (): void {
     $gateway = fakeGateway();
     $gateway->fails = true;
     $order = adminOrder(stock: 5, quantity: 2);
@@ -98,7 +98,7 @@ it('keeps the order untouched when the refund fails', function () {
         ->and($order->items->first()->variant->fresh()->stock)->toBe(5);
 });
 
-it('does not offer a refund for pending orders', function () {
+it('does not offer a refund for pending orders', function (): void {
     $order = Order::factory()->create();
 
     Livewire::test(ViewOrder::class, ['record' => $order->id])
@@ -106,7 +106,7 @@ it('does not offer a refund for pending orders', function () {
         ->assertActionHidden('ship');
 });
 
-it('does not restock twice when the refund webhook follows', function () {
+it('does not restock twice when the refund webhook follows', function (): void {
     fakeGateway();
     $order = adminOrder(stock: 5, quantity: 2);
 

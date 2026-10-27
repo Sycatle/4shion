@@ -12,7 +12,7 @@ use App\Models\Review;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('shows an active product with its price', function () {
+it('shows an active product with its price', function (): void {
     $product = Product::factory()->create(['name' => 'Hoodie Atlas', 'base_price' => 8900]);
     ProductVariant::factory()->for($product)->create(['color' => 'Noir', 'size' => 'M']);
 
@@ -22,13 +22,13 @@ it('shows an active product with its price', function () {
         ->assertSee('89,00');
 });
 
-it('returns 404 for inactive products', function () {
+it('returns 404 for inactive products', function (): void {
     $product = Product::factory()->inactive()->create();
 
     $this->get(route('shop.show', $product))->assertNotFound();
 });
 
-it('preselects the first color that has stock', function () {
+it('preselects the first color that has stock', function (): void {
     $product = Product::factory()->create();
     ProductVariant::factory()->for($product)->outOfStock()->create(['color' => 'Noir', 'size' => 'M']);
     ProductVariant::factory()->for($product)->create(['color' => 'Écru', 'size' => 'M', 'stock' => 5]);
@@ -36,7 +36,7 @@ it('preselects the first color that has stock', function () {
     Livewire::test(ProductShow::class, ['product' => $product])->assertSet('color', 'Écru');
 });
 
-it('does not select a size that is out of stock', function () {
+it('does not select a size that is out of stock', function (): void {
     $product = Product::factory()->create();
     ProductVariant::factory()->for($product)->outOfStock()->create(['color' => 'Noir', 'size' => 'S']);
     ProductVariant::factory()->for($product)->create(['color' => 'Noir', 'size' => 'M', 'stock' => 5]);
@@ -48,7 +48,7 @@ it('does not select a size that is out of stock', function () {
         ->assertSet('size', 'M');
 });
 
-it('only shows approved reviews', function () {
+it('only shows approved reviews', function (): void {
     $product = Product::factory()->create();
     ProductVariant::factory()->for($product)->create();
     Review::factory()->for($product)->create(['body' => 'Avis publié']);
@@ -69,7 +69,7 @@ function purchase(User $user, Product $product, OrderStatus $status = OrderStatu
     ]);
 }
 
-it('lets a customer who bought the product leave a review pending moderation', function () {
+it('lets a customer who bought the product leave a review pending moderation', function (): void {
     $user = User::factory()->create();
     $product = Product::factory()->create();
     purchase($user, $product);
@@ -88,7 +88,7 @@ it('lets a customer who bought the product leave a review pending moderation', f
         ->and($review->user_id)->toBe($user->id);
 });
 
-it('refuses reviews from customers who did not buy the product', function () {
+it('refuses reviews from customers who did not buy the product', function (): void {
     $product = Product::factory()->create();
 
     Livewire::actingAs(User::factory()->create())->test(ProductShow::class, ['product' => $product])
@@ -98,7 +98,7 @@ it('refuses reviews from customers who did not buy the product', function () {
         ->assertForbidden();
 });
 
-it('refuses reviews for unpaid orders', function () {
+it('refuses reviews for unpaid orders', function (): void {
     $user = User::factory()->create();
     $product = Product::factory()->create();
     purchase($user, $product, OrderStatus::Pending);
@@ -106,7 +106,7 @@ it('refuses reviews for unpaid orders', function () {
     expect($user->can('review', $product))->toBeFalse();
 });
 
-it('allows a single review per product', function () {
+it('allows a single review per product', function (): void {
     $user = User::factory()->create();
     $product = Product::factory()->create();
     purchase($user, $product);
@@ -115,7 +115,7 @@ it('allows a single review per product', function () {
     expect($user->can('review', $product))->toBeFalse();
 });
 
-it('validates the review content', function () {
+it('validates the review content', function (): void {
     $user = User::factory()->create();
     $product = Product::factory()->create();
     purchase($user, $product);

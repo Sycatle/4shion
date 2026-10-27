@@ -15,7 +15,7 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
-it('starts a checkout and returns the payment url', function () {
+it('starts a checkout and returns the payment url', function (): void {
     fakeGateway();
     $user = User::factory()->create();
     cartWith();
@@ -27,7 +27,7 @@ it('starts a checkout and returns the payment url', function () {
         ->and($order->stripe_session_id)->toBe("cs_test_{$order->id}");
 });
 
-it('cancels the order, releases the stock and restores the cart when the provider fails', function () {
+it('cancels the order, releases the stock and restores the cart when the provider fails', function (): void {
     $gateway = fakeGateway();
     $gateway->fails = true;
     $user = User::factory()->create();
@@ -40,7 +40,7 @@ it('cancels the order, releases the stock and restores the cart when the provide
         ->and(app(CartManager::class)->count())->toBe(2);
 });
 
-it('cancels a pending order once and closes the payment session', function () {
+it('cancels a pending order once and closes the payment session', function (): void {
     $gateway = fakeGateway();
     $user = User::factory()->create();
     $variant = cartWith(stock: 5, quantity: 2);
@@ -55,7 +55,7 @@ it('cancels a pending order once and closes the payment session', function () {
         ->and($gateway->expired)->toBe(["cs_test_{$order->id}"]);
 });
 
-it('does not cancel a paid order', function () {
+it('does not cancel a paid order', function (): void {
     fakeGateway();
     $order = pendingOrder(User::factory()->create());
     app(MarkOrderPaid::class)($order);
@@ -65,7 +65,7 @@ it('does not cancel a paid order', function () {
     expect($order->fresh()->status)->toBe(OrderStatus::Paid);
 });
 
-it('marks an order as paid only once', function () {
+it('marks an order as paid only once', function (): void {
     Event::fake([OrderPaid::class]);
     $user = User::factory()->create();
     $coupon = Coupon::factory()->create(['code' => 'BIENVENUE10']);
@@ -85,7 +85,7 @@ it('marks an order as paid only once', function () {
     Event::assertDispatchedTimes(OrderPaid::class, 1);
 });
 
-it('refuses a transition outside the order lifecycle', function () {
+it('refuses a transition outside the order lifecycle', function (): void {
     $order = Order::factory()->create();
 
     expect(fn () => $order->transitionTo(OrderStatus::Shipped))->toThrow(InvalidOrderTransition::class)

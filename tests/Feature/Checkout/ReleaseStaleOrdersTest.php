@@ -7,7 +7,7 @@ use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 
-it('cancels abandoned pending orders and releases their stock', function () {
+it('cancels abandoned pending orders and releases their stock', function (): void {
     fakeGateway();
     $stale = pendingOrder(User::factory()->create(), quantity: 2);
     $stale->forceFill(['created_at' => now()->subHours(2)])->save();
@@ -22,11 +22,11 @@ it('cancels abandoned pending orders and releases their stock', function () {
         ->and($fresh->fresh()->status)->toBe(OrderStatus::Pending);
 });
 
-it('is scheduled', function () {
+it('is scheduled', function (): void {
     $this->artisan('schedule:list')->expectsOutputToContain('orders:release-stale');
 });
 
-it('lets the database reject negative stock', function () {
+it('lets the database reject negative stock', function (): void {
     $variant = ProductVariant::factory()->create(['stock' => 1]);
 
     expect(fn () => $variant->decrement('stock', 2))->toThrow(QueryException::class);

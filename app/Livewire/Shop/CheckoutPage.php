@@ -23,7 +23,7 @@ use Throwable;
 #[Title('Commande')]
 final class CheckoutPage extends Component
 {
-    private const MAX_ATTEMPTS_PER_MINUTE = 5;
+    private const int MAX_ATTEMPTS_PER_MINUTE = 5;
 
     public string $firstName = '';
 

@@ -9,6 +9,7 @@ use App\Enums\OrderStatus;
 use App\Exceptions\Orders\InvalidOrderTransition;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\RouteKey;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'coupon_id', 'coupon_code', 'shipping_address', 'billing_address',
     'stripe_session_id', 'stripe_payment_intent', 'paid_at', 'shipped_at',
 ])]
+#[RouteKey('number')]
 class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
@@ -46,11 +48,6 @@ class Order extends Model
             'paid_at' => 'datetime',
             'shipped_at' => 'datetime',
         ];
-    }
-
-    public function getRouteKeyName(): string
-    {
-        return 'number';
     }
 
     /** @return BelongsTo<User, $this> */

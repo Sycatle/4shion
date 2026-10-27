@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-it('redirects guests to the admin login', function () {
+it('redirects guests to the admin login', function (): void {
     $this->get('/admin')->assertRedirect('/admin/login');
 });
 
-it('forbids customers from the admin panel', function () {
+it('forbids customers from the admin panel', function (): void {
     $this->actingAs(User::factory()->create())->get('/admin')->assertForbidden();
 });
 
-it('lets admins into the panel', function () {
+it('lets admins into the panel', function (): void {
     $this->actingAs(User::factory()->create(['is_admin' => true]))->get('/admin')->assertOk();
 });

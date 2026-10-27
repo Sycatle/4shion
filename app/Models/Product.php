@@ -6,6 +6,8 @@ namespace App\Models;
 
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\RouteKey;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +24,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read Category $category
  */
 #[Fillable(['category_id', 'name', 'slug', 'description', 'specs', 'base_price', 'is_active', 'is_featured'])]
+#[RouteKey('slug')]
 class Product extends Model implements HasMedia
 {
     /** @use HasFactory<ProductFactory> */
@@ -55,11 +58,6 @@ class Product extends Model implements HasMedia
         }
 
         return $sheet;
-    }
-
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
     }
 
     /**
@@ -125,7 +123,8 @@ class Product extends Model implements HasMedia
      * @param  Builder<Product>  $query
      * @return Builder<Product>
      */
-    public function scopeActive(Builder $query): Builder
+    #[Scope]
+    protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
@@ -134,7 +133,7 @@ class Product extends Model implements HasMedia
     {
         $media = $this->getFirstMedia(self::IMAGES);
 
-        if ($media === null) {
+        if (! $media instanceof Media) {
             return null;
         }
 

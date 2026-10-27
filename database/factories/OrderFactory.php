@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /** @extends Factory<Order> */
 class OrderFactory extends Factory
 {
-    private const VAT_RATE = 20.0;
+    private const float VAT_RATE = 20.0;
 
     public function definition(): array
     {
@@ -22,7 +22,7 @@ class OrderFactory extends Factory
         $total = $subtotal + 490;
 
         return [
-            'number' => fn () => 'TMP-'.fake()->unique()->numerify('########'),
+            'number' => fn (): string => 'TMP-'.fake()->unique()->numerify('########'),
             'user_id' => User::factory(),
             'status' => OrderStatus::Pending,
             'subtotal' => $subtotal,

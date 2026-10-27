@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-final class CreateOrder
+final readonly class CreateOrder
 {
     public function __construct(private CartManager $cart) {}
 

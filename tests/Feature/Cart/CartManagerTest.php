@@ -18,7 +18,7 @@ function variant(int $price = 5000, int $stock = 10): ProductVariant
     return ProductVariant::factory()->for($product)->create(['stock' => $stock]);
 }
 
-it('adds items to a guest cart and sums quantities for the same variant', function () {
+it('adds items to a guest cart and sums quantities for the same variant', function (): void {
     $cart = app(CartManager::class);
     $variant = variant();
 
@@ -29,17 +29,17 @@ it('adds items to a guest cart and sums quantities for the same variant', functi
         ->and($cart->items())->toHaveCount(1);
 });
 
-it('refuses quantities above the available stock', function () {
+it('refuses quantities above the available stock', function (): void {
     $cart = app(CartManager::class);
 
     $cart->add(variant(stock: 2), 3);
 })->throws(CartException::class, 'Stock insuffisant');
 
-it('refuses out of stock variants', function () {
+it('refuses out of stock variants', function (): void {
     app(CartManager::class)->add(variant(stock: 0), 1);
 })->throws(CartException::class);
 
-it('updates and removes lines', function () {
+it('updates and removes lines', function (): void {
     $cart = app(CartManager::class);
     $item = $cart->add(variant(), 1);
 
@@ -50,7 +50,7 @@ it('updates and removes lines', function () {
     expect($cart->count())->toBe(0);
 });
 
-it('charges flat shipping below the free shipping threshold', function () {
+it('charges flat shipping below the free shipping threshold', function (): void {
     $cart = app(CartManager::class);
     $cart->add(variant(price: 4000), 1);
 
@@ -61,7 +61,7 @@ it('charges flat shipping below the free shipping threshold', function () {
         ->and($totals->total)->toBe(4490);
 });
 
-it('offers free shipping from the threshold', function () {
+it('offers free shipping from the threshold', function (): void {
     $cart = app(CartManager::class);
     $cart->add(variant(price: 10000), 1);
 
@@ -69,7 +69,7 @@ it('offers free shipping from the threshold', function () {
         ->and($cart->totals()->total)->toBe(10000);
 });
 
-it('applies a percentage coupon', function () {
+it('applies a percentage coupon', function (): void {
     $cart = app(CartManager::class);
     $cart->add(variant(price: 5000), 2);
     Coupon::factory()->create(['code' => 'BIENVENUE10', 'value' => 10]);
@@ -80,7 +80,7 @@ it('applies a percentage coupon', function () {
         ->and($cart->totals()->total)->toBe(9490);
 });
 
-it('applies a fixed coupon without exceeding the subtotal', function () {
+it('applies a fixed coupon without exceeding the subtotal', function (): void {
     $cart = app(CartManager::class);
     $cart->add(variant(price: 1500), 1);
     Coupon::factory()->fixed(5000)->create(['code' => 'BIG']);
@@ -90,7 +90,7 @@ it('applies a fixed coupon without exceeding the subtotal', function () {
     expect($cart->totals()->discount)->toBe(1500);
 });
 
-it('rejects unknown, expired and below-minimum coupons', function (string $code) {
+it('rejects unknown, expired and below-minimum coupons', function (string $code): void {
     $cart = app(CartManager::class);
     $cart->add(variant(price: 3000), 1);
     Coupon::factory()->expired()->create(['code' => 'OLD']);
@@ -99,7 +99,7 @@ it('rejects unknown, expired and below-minimum coupons', function (string $code)
     $cart->applyCoupon($code);
 })->with(['UNKNOWN', 'OLD', 'BIGSPENDER'])->throws(CartException::class);
 
-it('merges the guest cart into the user cart on login', function () {
+it('merges the guest cart into the user cart on login', function (): void {
     $variant = variant();
     $cart = app(CartManager::class);
     $cart->add($variant, 2);

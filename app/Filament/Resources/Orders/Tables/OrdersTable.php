@@ -44,7 +44,7 @@ final class OrdersTable
             ->filters([
                 SelectFilter::make('status')
                     ->label('Statut')
-                    ->options(collect(OrderStatus::cases())->mapWithKeys(fn (OrderStatus $status) => [$status->value => $status->label()])),
+                    ->options(collect(OrderStatus::cases())->mapWithKeys(fn (OrderStatus $status): array => [$status->value => $status->label()])),
             ])
             ->recordActions([
                 ViewAction::make(),

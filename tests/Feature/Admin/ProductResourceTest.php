@@ -12,17 +12,17 @@ use App\Models\ProductVariant;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
 });
 
-it('lists products', function () {
+it('lists products', function (): void {
     $products = Product::factory()->count(3)->create();
 
     Livewire::test(ListProducts::class)->assertCanSeeTableRecords($products);
 });
 
-it('creates a product and stores the price in cents', function () {
+it('creates a product and stores the price in cents', function (): void {
     $category = Category::factory()->create();
 
     Livewire::test(CreateProduct::class)
@@ -39,14 +39,14 @@ it('creates a product and stores the price in cents', function () {
     expect(Product::firstWhere('slug', 'hoodie-atlas')->base_price)->toBe(8990);
 });
 
-it('shows the price in euros when editing', function () {
+it('shows the price in euros when editing', function (): void {
     $product = Product::factory()->create(['base_price' => 8990]);
 
     Livewire::test(EditProduct::class, ['record' => $product->id])
         ->assertFormSet(['base_price' => 89.9]);
 });
 
-it('requires a unique slug', function () {
+it('requires a unique slug', function (): void {
     Product::factory()->create(['slug' => 'taken']);
 
     Livewire::test(CreateProduct::class)
@@ -55,7 +55,7 @@ it('requires a unique slug', function () {
         ->assertHasFormErrors(['slug' => 'unique']);
 });
 
-it('manages variants of a product', function () {
+it('manages variants of a product', function (): void {
     $product = Product::factory()->create();
     $variant = ProductVariant::factory()->for($product)->create(['stock' => 4, 'size' => 'XL', 'color' => 'Ecru']);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Cart\CartManager;
 use App\Exceptions\Cart\CartException;
 use App\Models\Cart;

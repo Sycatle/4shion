@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Actions\Orders\MarkOrderPaid;
@@ -15,7 +17,7 @@ use Throwable;
 
 #[Layout('components.layouts.shop')]
 #[Title('Confirmation de commande')]
-class CheckoutSuccess extends Component
+final class CheckoutSuccess extends Component
 {
     #[Url(as: 'session_id')]
     public string $sessionId = '';

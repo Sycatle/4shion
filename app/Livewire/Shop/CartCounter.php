@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Cart\CartManager;
@@ -7,7 +9,7 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class CartCounter extends Component
+final class CartCounter extends Component
 {
     #[On('cart-updated')]
     public function refresh(): void

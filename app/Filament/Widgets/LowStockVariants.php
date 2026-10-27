@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Products\ProductResource;
@@ -10,7 +12,7 @@ use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 
-class LowStockVariants extends TableWidget
+final class LowStockVariants extends TableWidget
 {
     protected static ?int $sort = 2;
 

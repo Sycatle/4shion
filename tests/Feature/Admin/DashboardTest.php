@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Filament\Widgets\LowStockVariants;
 use App\Filament\Widgets\ShopStats;
 use App\Models\Order;

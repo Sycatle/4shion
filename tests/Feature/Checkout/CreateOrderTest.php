@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Checkout\CreateOrder;
 use App\Cart\CartManager;
 use App\Enums\OrderStatus;

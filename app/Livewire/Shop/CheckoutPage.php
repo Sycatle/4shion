@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Actions\Checkout\StartCheckout;
@@ -19,7 +21,7 @@ use Throwable;
 
 #[Layout('components.layouts.shop')]
 #[Title('Commande')]
-class CheckoutPage extends Component
+final class CheckoutPage extends Component
 {
     private const MAX_ATTEMPTS_PER_MINUTE = 5;
 

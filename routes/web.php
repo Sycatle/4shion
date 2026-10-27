@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Account\InvoiceController;
 use App\Http\Controllers\Shop\CheckoutCancelController;
 use App\Http\Controllers\Shop\HomeController;

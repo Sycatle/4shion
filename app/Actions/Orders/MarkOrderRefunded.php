@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
-class MarkOrderRefunded
+final class MarkOrderRefunded
 {
     /**
      * Record a refund and put the items back in stock. Shared by the admin refund action and the

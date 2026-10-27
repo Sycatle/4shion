@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Cart\CartManager;
@@ -15,7 +17,7 @@ use Livewire\Component;
 
 #[Layout('components.layouts.shop')]
 #[Title('Panier')]
-class CartPage extends Component
+final class CartPage extends Component
 {
     private const MAX_COUPON_ATTEMPTS_PER_MINUTE = 5;
 

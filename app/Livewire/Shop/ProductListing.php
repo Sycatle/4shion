@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Actions\Catalog\ListProducts;
@@ -19,7 +21,7 @@ use Livewire\WithPagination;
 
 #[Layout('components.layouts.shop')]
 #[Title('Boutique')]
-class ProductListing extends Component
+final class ProductListing extends Component
 {
     use WithPagination;
 

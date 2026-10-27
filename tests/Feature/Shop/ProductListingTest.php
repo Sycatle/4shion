@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Livewire\Shop\ProductListing;
 use App\Models\Category;
 use App\Models\Product;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\DiscountType;
 use App\Filament\Resources\Coupons\Pages\ManageCoupons;
 use App\Models\Coupon;

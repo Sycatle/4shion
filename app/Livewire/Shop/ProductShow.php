@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Cart\CartManager;
@@ -25,7 +27,7 @@ use Livewire\Component;
  * @property-read bool $canReview
  */
 #[Layout('components.layouts.shop')]
-class ProductShow extends Component
+final class ProductShow extends Component
 {
     public Product $product;
 

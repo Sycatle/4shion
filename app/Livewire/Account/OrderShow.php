@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Account;
 
 use App\Enums\OrderStatus;
@@ -12,7 +14,7 @@ use Livewire\Component;
 use Throwable;
 
 #[Layout('components.layouts.shop')]
-class OrderShow extends Component
+final class OrderShow extends Component
 {
     public Order $order;
 

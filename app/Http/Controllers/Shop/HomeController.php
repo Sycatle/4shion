@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
@@ -7,7 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 
-class HomeController extends Controller
+final class HomeController extends Controller
 {
     public function __invoke(): View
     {

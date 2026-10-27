@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
 use App\Enums\OrderStatus;
@@ -7,7 +9,7 @@ use App\Models\Order;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class ShopStats extends StatsOverviewWidget
+final class ShopStats extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
 

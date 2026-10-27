@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use App\Actions\Orders\GenerateInvoice;
@@ -12,7 +14,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderConfirmation extends Mailable implements ShouldQueue
+final class OrderConfirmation extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

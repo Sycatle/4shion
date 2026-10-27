@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
@@ -7,7 +9,7 @@ use App\Events\OrderShipped;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
-class MarkOrderShipped
+final class MarkOrderShipped
 {
     /** Move a paid order to shipped. Returns false when the order is not in a shippable state. */
     public function __invoke(Order $order): bool

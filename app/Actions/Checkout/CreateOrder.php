@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Checkout;
 
 use App\Cart\CartManager;
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class CreateOrder
+final class CreateOrder
 {
     public function __construct(private CartManager $cart) {}
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Filament\Resources\Reviews\Pages\ManageReviews;
 use App\Models\Review;
 use App\Models\User;

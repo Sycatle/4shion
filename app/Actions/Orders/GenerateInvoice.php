@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Orders;
 
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DomPdf;
 
-class GenerateInvoice
+final class GenerateInvoice
 {
     public function __invoke(Order $order): DomPdf
     {

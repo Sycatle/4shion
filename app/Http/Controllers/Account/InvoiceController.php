@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Account;
 
 use App\Actions\Orders\GenerateInvoice;
@@ -8,7 +10,7 @@ use App\Models\Order;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
-class InvoiceController extends Controller
+final class InvoiceController extends Controller
 {
     public function __invoke(Order $order, GenerateInvoice $generateInvoice): Response
     {

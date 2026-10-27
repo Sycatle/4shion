@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Checkout;
 
 use App\Actions\Orders\CancelOrder;
@@ -8,7 +10,7 @@ use App\Models\User;
 use App\Payments\CheckoutGateway;
 use Throwable;
 
-class StartCheckout
+final class StartCheckout
 {
     public function __construct(
         private CreateOrder $createOrder,

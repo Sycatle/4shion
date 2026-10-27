@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
 use App\Events\OrderShipped;
 use App\Mail\OrderShippedNotice;
 use Illuminate\Support\Facades\Mail;
 
-class SendShippingNotification
+final class SendShippingNotification
 {
     public function handle(OrderShipped $event): void
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Account;
 
 use App\Models\User;
@@ -10,7 +12,7 @@ use Livewire\Component;
 
 #[Layout('components.layouts.shop')]
 #[Title('Mes adresses')]
-class AddressBook extends Component
+final class AddressBook extends Component
 {
     public ?int $editingId = null;
 

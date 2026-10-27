@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\OrderStatus;
 
 it('allows only the documented lifecycle moves', function (OrderStatus $from, OrderStatus $to, bool $allowed) {

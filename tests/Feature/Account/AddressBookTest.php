@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Livewire\Account\AddressBook;
 use App\Models\Address;
 use App\Models\User;

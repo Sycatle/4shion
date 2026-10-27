@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Models\Category;
@@ -8,7 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
-class SearchOverlay extends Component
+final class SearchOverlay extends Component
 {
     private const MIN_LENGTH = 2;
 

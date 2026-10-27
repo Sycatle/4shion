@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Shop;
 
 use App\Actions\Orders\CancelOrder;
@@ -8,7 +10,7 @@ use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class CheckoutCancelController extends Controller
+final class CheckoutCancelController extends Controller
 {
     /**
      * The customer left the payment page: release the reserved stock and give the cart back.

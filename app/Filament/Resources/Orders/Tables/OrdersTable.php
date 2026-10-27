@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Enums\OrderStatus;
@@ -10,7 +12,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class OrdersTable
+final class OrdersTable
 {
     public static function configure(Table $table): Table
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Orders\MarkOrderPaid;
 use App\Enums\OrderStatus;
 use App\Jobs\ProcessStripeEvent;

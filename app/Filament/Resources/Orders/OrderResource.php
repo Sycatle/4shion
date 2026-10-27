@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Orders;
 
 use App\Enums\OrderStatus;
@@ -14,7 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class OrderResource extends Resource
+final class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
@@ -40,7 +42,7 @@ class OrderResource extends Resource
         return $toShip > 0 ? (string) $toShip : null;
     }
 
-    public static function getNavigationBadgeTooltip(): ?string
+    public static function getNavigationBadgeTooltip(): string
     {
         return 'Commandes à expédier';
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Checkout\CreateOrder;
 use App\Actions\Checkout\StartCheckout;
 use App\Actions\Orders\CancelOrder;

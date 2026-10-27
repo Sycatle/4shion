@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
@@ -8,7 +10,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
-class MarkOrderPaid
+final class MarkOrderPaid
 {
     /**
      * Record a successful payment. Safe to call several times for the same order

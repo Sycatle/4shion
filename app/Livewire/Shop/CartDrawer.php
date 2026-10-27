@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Shop;
 
 use App\Cart\CartManager;
@@ -9,7 +11,7 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class CartDrawer extends Component
+final class CartDrawer extends Component
 {
     public ?string $error = null;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use App\Models\Order;
@@ -10,7 +12,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderShippedNotice extends Mailable implements ShouldQueue
+final class OrderShippedNotice extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

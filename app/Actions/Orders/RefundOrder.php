@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Orders;
 
 use App\Enums\OrderStatus;
@@ -7,7 +9,7 @@ use App\Models\Order;
 use App\Payments\CheckoutGateway;
 use LogicException;
 
-class RefundOrder
+final class RefundOrder
 {
     public function __construct(private CheckoutGateway $gateway, private MarkOrderRefunded $markOrderRefunded) {}
 

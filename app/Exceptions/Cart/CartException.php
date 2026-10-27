@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Exceptions\Cart;
 
 use RuntimeException;
@@ -7,7 +9,7 @@ use RuntimeException;
 /**
  * Domain error whose message is safe to show to the customer.
  */
-class CartException extends RuntimeException
+final class CartException extends RuntimeException
 {
     public static function insufficientStock(int $available): self
     {

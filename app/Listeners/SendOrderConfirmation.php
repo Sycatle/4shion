@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Listeners;
 
 use App\Events\OrderPaid;
 use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\Mail;
 
-class SendOrderConfirmation
+final class SendOrderConfirmation
 {
     public function handle(OrderPaid $event): void
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Catalog;
 
 use App\Data\ProductFilters;
@@ -8,7 +10,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 
-class ListProducts
+final class ListProducts
 {
     private const SEARCH_LIMIT = 200;
 

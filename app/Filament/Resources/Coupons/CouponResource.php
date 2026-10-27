@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Coupons;
 
 use App\Enums\DiscountType;
@@ -20,7 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CouponResource extends Resource
+final class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 

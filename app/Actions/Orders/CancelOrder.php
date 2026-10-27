@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Orders;
 
 use App\Cart\CartManager;
@@ -11,7 +13,7 @@ use App\Payments\CheckoutGateway;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class CancelOrder
+final class CancelOrder
 {
     public function __construct(private CartManager $cart, private CheckoutGateway $gateway) {}
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Cart\CartManager;
 use App\Livewire\Shop\CartPage;
 use App\Livewire\Shop\ProductShow;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Products\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
@@ -16,7 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
 
-class VariantsRelationManager extends RelationManager
+final class VariantsRelationManager extends RelationManager
 {
     protected static string $relationship = 'variants';
 

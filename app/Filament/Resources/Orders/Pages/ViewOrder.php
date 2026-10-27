@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Orders\Pages;
 
 use App\Actions\Orders\GenerateInvoice;
@@ -16,7 +18,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 /** @property Order $record */
-class ViewOrder extends ViewRecord
+final class ViewOrder extends ViewRecord
 {
     protected static string $resource = OrderResource::class;
 

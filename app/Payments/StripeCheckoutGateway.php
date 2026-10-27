@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payments;
 
 use App\Models\Order;
@@ -8,7 +10,7 @@ use Laravel\Cashier\Cashier;
 use Stripe\Checkout\Session;
 use Stripe\StripeClient;
 
-class StripeCheckoutGateway implements CheckoutGateway
+final class StripeCheckoutGateway implements CheckoutGateway
 {
     /** Stripe requires a session lifetime between 30 minutes and 24 hours. */
     private const SESSION_LIFETIME_MINUTES = 30;

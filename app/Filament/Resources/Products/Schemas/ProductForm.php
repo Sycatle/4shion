@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
@@ -13,7 +15,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
-class ProductForm
+final class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {

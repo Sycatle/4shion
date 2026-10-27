@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Cart;
 
 use App\Exceptions\Cart\CartException;
@@ -17,7 +19,7 @@ use Illuminate\Support\Str;
 /**
  * Persistent cart: bound to the user when authenticated, to a session token otherwise.
  */
-class CartManager
+final class CartManager
 {
     public const MAX_QUANTITY_PER_LINE = 10;
 

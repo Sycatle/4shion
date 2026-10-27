@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Account;
 
 use App\Models\Order;
@@ -13,7 +15,7 @@ use Livewire\WithPagination;
 
 #[Layout('components.layouts.shop')]
 #[Title('Mes commandes')]
-class OrderList extends Component
+final class OrderList extends Component
 {
     use WithPagination;
 

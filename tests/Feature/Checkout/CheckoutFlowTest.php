@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Cart\CartManager;
 use App\Enums\OrderStatus;
 use App\Livewire\Shop\CheckoutPage;

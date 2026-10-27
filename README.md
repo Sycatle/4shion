@@ -17,7 +17,10 @@ Laravel 13, PHP 8.5 (Sail), Livewire 4, Alpine, Tailwind 3, Vite, Filament 5, Ca
 
 ## Getting started
 
-Everything runs through Laravel Sail; PHP, Composer and Node are not needed on the host.
+Everything runs through Laravel Sail; PHP, Composer and Node are not needed on the host. The application requires
+PHP 8.5.12 or later, the first release with fixes for the October 2026 bailout state-corruption advisories
+(GHSA-w8hw-w9fx-j79w, GHSA-6wmf-4rv5-p3rp) and including the pdo_pgsql quoting fix (CVE-2026-17543) from 8.5.9;
+Composer's platform check refuses to boot on an older runtime.
 
 ```bash
 cp .env.example .env

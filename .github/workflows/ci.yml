@@ -23,6 +23,9 @@ jobs:
 
       - uses: ramsey/composer-install@v3
 
+      - name: Platform requirements
+        run: composer check-platform-reqs --lock
+
       - name: Pint
         run: composer lint
 

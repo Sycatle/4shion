@@ -20,6 +20,7 @@
         "spatie/laravel-medialibrary": "^11.23"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.7",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.13",
         "laravel-lang/common": "^6.8",
@@ -31,7 +32,8 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.7",
-        "pestphp/pest-plugin-laravel": "^4.1"
+        "pestphp/pest-plugin-laravel": "^4.1",
+        "rector/rector": "^2.8"
     },
     "autoload": {
         "psr-4": {
@@ -65,6 +67,8 @@
         "lint": "pint --test",
         "lint:fix": "pint",
         "analyse": "phpstan analyse --memory-limit=1G",
+        "refactor": "rector process",
+        "refactor:check": "rector process --dry-run",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",

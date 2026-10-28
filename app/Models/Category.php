@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsActivity;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\RouteKey;
@@ -12,12 +13,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Config;
 
-#[Fillable(['name', 'slug', 'description', 'position'])]
+#[Fillable(['name', 'slug', 'description', 'position', 'content', 'meta_title', 'meta_description'])]
 #[RouteKey('slug')]
 class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     /** @return array{field: string, ink: string} */
     public function theme(): array

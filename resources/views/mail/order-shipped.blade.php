@@ -10,6 +10,13 @@ Bonne nouvelle {{ $order->user->name }}, la commande **{{ $order->number }}** vi
 @endif
 {{ $order->shipping_address->postalCode }} {{ $order->shipping_address->city }}
 
+@foreach ($order->shipments as $shipment)
+@if ($shipment->tracking_number)
+Suivi {{ $shipment->carrier?->label() }} : **{{ $shipment->tracking_number }}**@if ($shipment->trackingUrl()) ([suivre le colis]({{ $shipment->trackingUrl() }}))@endif
+
+@endif
+@endforeach
+
 <x-mail::button :url="route('account.orders.show', $order)">
 Voir ma commande
 </x-mail::button>

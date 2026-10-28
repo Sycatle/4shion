@@ -21,6 +21,9 @@ class FakeCheckoutGateway implements CheckoutGateway
     /** @var list<string> */
     public array $refunded = [];
 
+    /** @var list<array{intent: string, amount: int|null, key: string|null}> */
+    public array $partialRefunds = [];
+
     public function createSession(Order $order): CheckoutSession
     {
         if ($this->fails) {
@@ -42,12 +45,13 @@ class FakeCheckoutGateway implements CheckoutGateway
         $this->expired[] = $sessionId;
     }
 
-    public function refund(string $paymentIntent): void
+    public function refund(string $paymentIntent, ?int $amount = null, ?string $idempotencyKey = null): void
     {
         if ($this->fails) {
             throw new RuntimeException('Stripe is down.');
         }
 
         $this->refunded[] = $paymentIntent;
+        $this->partialRefunds[] = ['intent' => $paymentIntent, 'amount' => $amount, 'key' => $idempotencyKey];
     }
 }

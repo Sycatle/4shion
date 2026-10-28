@@ -16,6 +16,9 @@ interface CheckoutGateway
     /** Close a session so it can no longer be paid. */
     public function expireSession(string $sessionId): void;
 
-    /** Refund the full amount of a payment. Idempotent per payment intent. */
-    public function refund(string $paymentIntent): void;
+    /**
+     * Refund a payment: the whole remaining amount, or `$amount` cents for a partial refund.
+     * Idempotent per `$idempotencyKey` (default: one full refund per payment intent).
+     */
+    public function refund(string $paymentIntent, ?int $amount = null, ?string $idempotencyKey = null): void;
 }

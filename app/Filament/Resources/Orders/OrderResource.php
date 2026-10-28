@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Orders;
 
 use App\Enums\OrderStatus;
+use App\Filament\Concerns\ResolvesRecordsByIdOrRouteKey;
+use App\Filament\Concerns\RestrictedByRole;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Filament\Resources\Orders\Pages\ViewOrder;
+use App\Filament\Resources\Orders\RelationManagers\NotesRelationManager;
+use App\Filament\Resources\Orders\RelationManagers\ShipmentsRelationManager;
 use App\Filament\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
@@ -19,6 +23,13 @@ use Override;
 
 final class OrderResource extends Resource
 {
+    use ResolvesRecordsByIdOrRouteKey, RestrictedByRole;
+
+    protected static function area(): string
+    {
+        return 'orders';
+    }
+
     #[Override]
     protected static ?string $model = Order::class;
 
@@ -62,6 +73,11 @@ final class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return OrdersTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [ShipmentsRelationManager::class, NotesRelationManager::class];
     }
 
     public static function getPages(): array

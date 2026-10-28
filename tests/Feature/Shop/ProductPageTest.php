@@ -36,16 +36,19 @@ it('preselects the first color that has stock', function (): void {
     Livewire::test(ProductShow::class, ['product' => $product])->assertSet('color', 'Écru');
 });
 
-it('does not select a size that is out of stock', function (): void {
+it('keeps a sold-out size selectable so its back-in-stock alert can be requested, but not purchasable', function (): void {
     $product = Product::factory()->create();
     ProductVariant::factory()->for($product)->outOfStock()->create(['color' => 'Noir', 'size' => 'S']);
     ProductVariant::factory()->for($product)->create(['color' => 'Noir', 'size' => 'M', 'stock' => 5]);
 
     Livewire::test(ProductShow::class, ['product' => $product])
         ->call('selectSize', 'S')
-        ->assertSet('size', null)
+        ->assertSet('size', 'S')
+        ->call('addToCart')
+        ->assertSet('added', false)
         ->call('selectSize', 'M')
-        ->assertSet('size', 'M');
+        ->call('addToCart')
+        ->assertSet('added', true);
 });
 
 it('only shows approved reviews', function (): void {

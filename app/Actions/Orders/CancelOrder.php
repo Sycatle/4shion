@@ -6,6 +6,7 @@ namespace App\Actions\Orders;
 
 use App\Cart\CartManager;
 use App\Enums\OrderStatus;
+use App\Enums\StockMovementReason;
 use App\Exceptions\Cart\CartException;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -15,7 +16,11 @@ use Throwable;
 
 final readonly class CancelOrder
 {
-    public function __construct(private CartManager $cart, private CheckoutGateway $gateway) {}
+    public function __construct(
+        private CartManager $cart,
+        private CheckoutGateway $gateway,
+        private RestoreOrderResources $restoreResources,
+    ) {}
 
     /**
      * Cancel a pending order, release its reserved stock and close the payment session.
@@ -32,11 +37,7 @@ final readonly class CancelOrder
                 return false;
             }
 
-            $order->load('items.variant');
-
-            foreach ($order->items as $item) {
-                $item->variant?->increment('stock', $item->quantity);
-            }
+            ($this->restoreResources)($order, StockMovementReason::Cancellation);
 
             $order->transitionTo(OrderStatus::Cancelled);
 

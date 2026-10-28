@@ -27,8 +27,8 @@ final class LowStockVariants extends TableWidget
             ->heading('Stock faible')
             ->query(fn (): Builder => ProductVariant::query()
                 ->with('product')
-                ->where('stock', '<=', Config::integer('shop.low_stock_threshold'))
-                ->whereHas('product', fn (Builder $query) => $query->where('is_active', true)))
+                ->whereRaw('stock <= COALESCE(low_stock_threshold, ?)', [Config::integer('shop.low_stock_threshold')])
+                ->whereHas('product', fn (Builder $query) => $query->where('is_active', true)->where('is_gift_card', false)))
             ->columns([
                 TextColumn::make('product.name')->label('Produit'),
                 TextColumn::make('sku')->label('SKU'),
@@ -40,7 +40,7 @@ final class LowStockVariants extends TableWidget
                     ->color(fn (int $state): string => $state === 0 ? 'danger' : 'warning'),
             ])
             ->defaultSort('stock')
-            ->recordUrl(fn (ProductVariant $record): string => ProductResource::getUrl('edit', ['record' => $record->product_id]))
+            ->recordUrl(fn (ProductVariant $record): string => ProductResource::getUrl('edit', ['record' => $record->product]))
             ->paginated([5, 10]);
     }
 }

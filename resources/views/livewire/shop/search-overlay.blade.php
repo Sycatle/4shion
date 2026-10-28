@@ -38,7 +38,7 @@
                     <ul class="mt-3 flex flex-wrap gap-2">
                         @foreach ($categories as $category)
                             <li>
-                                <a href="{{ route('shop.index', ['category' => $category->slug]) }}" wire:navigate x-on:click="open = false" class="btn-outline h-10">{{ $category->name }}</a>
+                                <a href="{{ route('shop.category', $category->slug) }}" wire:navigate x-on:click="open = false" class="btn-outline h-10">{{ $category->name }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -52,7 +52,7 @@
                                 <a href="{{ route('shop.show', $product) }}" wire:navigate x-on:click="open = false" class="group block">
                                     <x-shop.thumb :product="$product" class="flex aspect-[4/5]" />
                                     <p class="mt-2 text-sm font-medium group-hover:underline">{{ $product->name }}</p>
-                                    <p class="text-sm text-muted">{{ \App\Support\Money::format($product->base_price) }}</p>
+                                    <p class="text-sm text-muted">{{ \App\Support\Money::format($product->price()) }}</p>
                                 </a>
                             </li>
                         @endforeach

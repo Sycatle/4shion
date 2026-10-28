@@ -3,6 +3,7 @@
 @php
     $links = [
         ['account.orders', 'Mes commandes'],
+        ['account.wishlist', 'Mes favoris'],
         ['account.addresses', 'Mes adresses'],
         ['profile', 'Mon profil'],
     ];

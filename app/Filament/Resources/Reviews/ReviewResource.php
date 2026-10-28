@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Reviews;
 
+use App\Filament\Concerns\RestrictedByRole;
 use App\Filament\Resources\Reviews\Pages\ManageReviews;
 use App\Models\Review;
 use BackedEnum;
@@ -13,6 +14,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -27,6 +29,13 @@ use Override;
 
 final class ReviewResource extends Resource
 {
+    use RestrictedByRole;
+
+    protected static function area(): string
+    {
+        return 'reviews';
+    }
+
     #[Override]
     protected static ?string $model = Review::class;
 
@@ -65,6 +74,7 @@ final class ReviewResource extends Resource
                 TextEntry::make('created_at')->label('Posté le')->dateTime('d/m/Y H:i'),
                 TextEntry::make('title')->label('Titre')->placeholder('—')->columnSpanFull(),
                 TextEntry::make('body')->label('Avis')->columnSpanFull(),
+                TextEntry::make('merchant_reply')->label('Réponse')->placeholder('—')->columnSpanFull(),
             ]);
     }
 
@@ -112,6 +122,21 @@ final class ReviewResource extends Resource
                     ->color('success')
                     ->visible(fn (Review $record): bool => $record->approved_at === null)
                     ->action(fn (Review $record) => $record->update(['approved_at' => now()])),
+                Action::make('reply')
+                    ->label('Répondre')
+                    ->icon(Heroicon::OutlinedChatBubbleLeft)
+                    ->fillForm(fn (Review $record): array => ['merchant_reply' => $record->merchant_reply])
+                    ->schema([
+                        Textarea::make('merchant_reply')->label('Réponse publique')->rows(4)->maxLength(1000),
+                    ])
+                    ->action(function (Review $record, array $data): void {
+                        $reply = is_string($data['merchant_reply'] ?? null) ? trim($data['merchant_reply']) : '';
+
+                        $record->update([
+                            'merchant_reply' => $reply !== '' ? $reply : null,
+                            'merchant_replied_at' => $reply !== '' ? now() : null,
+                        ]);
+                    }),
                 Action::make('unpublish')
                     ->label('Dépublier')
                     ->icon(Heroicon::OutlinedEyeSlash)

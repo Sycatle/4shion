@@ -24,6 +24,7 @@ final class ListProducts
     {
         $query = Product::query()
             ->active()
+            ->withRating()
             ->with(['category', 'media', 'variants']);
 
         if ($filters->search !== '') {

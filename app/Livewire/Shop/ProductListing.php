@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -108,7 +109,7 @@ final class ProductListing extends Component
     #[Computed]
     public function availableSizes(): Collection
     {
-        return ProductVariant::query()->distinct()->get(['size'])
+        return $this->filterableVariants()->distinct()->get(['size'])
             ->map(fn (ProductVariant $variant): string => $variant->size)
             ->sortBy(fn (string $size): false|int => array_search($size, self::SIZE_ORDER, true))
             ->values()
@@ -119,9 +120,19 @@ final class ProductListing extends Component
     #[Computed]
     public function availableColors(): Collection
     {
-        return ProductVariant::query()->select('color', 'color_hex')->distinct()->orderBy('color')->get()
+        return $this->filterableVariants()->select('color', 'color_hex')->distinct()->orderBy('color')->get()
             ->mapWithKeys(fn (ProductVariant $variant): array => [$variant->color => $variant->color_hex])
             ->toBase();
+    }
+
+    /**
+     * Gift card variants carry an amount in `size`, so they stay out of the clothing filters.
+     *
+     * @return Builder<ProductVariant>
+     */
+    private function filterableVariants(): Builder
+    {
+        return ProductVariant::query()->whereHas('product', fn (Builder $product) => $product->where('is_active', true)->where('is_gift_card', false));
     }
 
     public function render(): View

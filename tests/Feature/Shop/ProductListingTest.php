@@ -42,6 +42,19 @@ it('filters by size and color', function (): void {
         ->assertDontSee('Produit Autre');
 });
 
+it('keeps gift card amounts out of the size and colour filters', function (): void {
+    $tee = Product::factory()->create();
+    ProductVariant::factory()->for($tee)->create(['size' => 'M', 'color' => 'Noir']);
+
+    $card = Product::factory()->create(['is_gift_card' => true]);
+    ProductVariant::factory()->for($card)->create(['size' => '50 €', 'color' => 'Écru']);
+
+    $listing = Livewire::test(ProductListing::class)->instance();
+
+    expect($listing->availableSizes()->all())->toBe(['M'])
+        ->and($listing->availableColors()->keys()->all())->toBe(['Noir']);
+});
+
 it('filters by price range expressed in euros', function (): void {
     Product::factory()->create(['name' => 'Produit Cher', 'base_price' => 20000]);
     Product::factory()->create(['name' => 'Produit Abordable', 'base_price' => 3000]);

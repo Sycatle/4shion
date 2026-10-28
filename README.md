@@ -1,6 +1,5 @@
 # 4shion
 
-[![CI](https://github.com/Sycatle/4shion/actions/workflows/ci.yml/badge.svg)](https://github.com/Sycatle/4shion/actions/workflows/ci.yml)
 ![PHP 8.5](https://img.shields.io/badge/PHP-8.5-777BB4?logo=php&logoColor=white)
 ![Laravel 13](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 ![Larastan level max](https://img.shields.io/badge/Larastan-level%20max-2A5EA7)

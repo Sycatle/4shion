@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -20,6 +21,16 @@ new #[Layout('layouts.guest')] class extends Component
      */
     public function register(): void
     {
+        $key = 'register:'.request()->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $this->addError('email', 'Trop de tentatives. Réessayez dans '.RateLimiter::availableIn($key).' secondes.');
+
+            return;
+        }
+
+        RateLimiter::hit($key, 3600);
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],

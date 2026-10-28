@@ -6,13 +6,17 @@ namespace App\Livewire\Shop;
 
 use App\Actions\Checkout\StartCheckout;
 use App\Cart\CartManager;
-use App\Cart\CartTotals;
 use App\Data\ShippingAddress;
 use App\Exceptions\Cart\CartException;
 use App\Models\Address;
+use App\Models\ShippingMethod;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -24,6 +28,8 @@ use Throwable;
 final class CheckoutPage extends Component
 {
     private const int MAX_ATTEMPTS_PER_MINUTE = 5;
+
+    public string $email = '';
 
     public string $firstName = '';
 
@@ -47,6 +53,8 @@ final class CheckoutPage extends Component
 
     public ?string $error = null;
 
+    public ?int $shippingMethodId = null;
+
     public function mount(CartManager $cart): void
     {
         if ($cart->count() === 0) {
@@ -55,8 +63,12 @@ final class CheckoutPage extends Component
             return;
         }
 
-        /** @var User $user */
+        $this->shippingMethodId = ShippingMethod::default()?->id;
         $user = auth()->user();
+
+        if (! $user instanceof User) {
+            return;
+        }
 
         $address = $user->addresses()->orderByDesc('is_default')->latest()->first();
 
@@ -80,6 +92,8 @@ final class CheckoutPage extends Component
     public function submit(StartCheckout $startCheckout): void
     {
         $this->error = null;
+        $this->email = trim($this->email);
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -88,11 +102,8 @@ final class CheckoutPage extends Component
             throw $e;
         }
 
-        /** @var User $user */
-        $user = auth()->user();
-
         // Each attempt reserves stock and opens a payment session: cap them per customer.
-        $throttleKey = 'checkout:'.$user->id;
+        $throttleKey = 'checkout:'.(auth()->id() ?? session()->getId());
 
         if (RateLimiter::tooManyAttempts($throttleKey, self::MAX_ATTEMPTS_PER_MINUTE)) {
             $this->error = sprintf('Trop de tentatives de paiement. Réessayez dans %d secondes.', RateLimiter::availableIn($throttleKey));
@@ -101,6 +112,16 @@ final class CheckoutPage extends Component
         }
 
         RateLimiter::hit($throttleKey);
+
+        $user = auth()->user();
+
+        if (! $user instanceof User) {
+            $user = $this->registerGuest();
+
+            if (! $user instanceof User) {
+                return;
+            }
+        }
 
         $address = new ShippingAddress(
             firstName: $this->firstName,
@@ -113,7 +134,7 @@ final class CheckoutPage extends Component
         );
 
         try {
-            $url = $startCheckout($user, $address);
+            $url = $startCheckout($user, $address, $this->selectedShippingMethod());
         } catch (CartException $e) {
             $this->error = $e->getMessage();
 
@@ -143,10 +164,38 @@ final class CheckoutPage extends Component
         $this->redirect($url);
     }
 
+    /**
+     * Guest checkout: the order needs an owner, so a light account is created and signed in.
+     * The customer then gets a link to choose a password; the order stays reachable meanwhile.
+     */
+    private function registerGuest(): ?User
+    {
+        $email = Str::lower(trim($this->email));
+
+        if (User::query()->where('email', $email)->exists()) {
+            $this->error = 'Un compte existe déjà avec cet e-mail. Connectez-vous pour continuer votre commande.';
+
+            return null;
+        }
+
+        $user = User::create([
+            'name' => trim("{$this->firstName} {$this->lastName}"),
+            'email' => $email,
+            'password' => Str::random(40),
+        ]);
+
+        Auth::login($user);
+        session()->regenerate();
+        Password::sendResetLink(['email' => $email]);
+
+        return $user;
+    }
+
     /** @return array<string, list<string>> */
     protected function rules(): array
     {
         return [
+            'email' => [auth()->check() ? 'nullable' : 'required', 'email:rfc', 'max:255'],
             'firstName' => ['required', 'string', 'max:100'],
             'lastName' => ['required', 'string', 'max:100'],
             'line1' => ['required', 'string', 'max:255'],
@@ -162,6 +211,7 @@ final class CheckoutPage extends Component
     protected function validationAttributes(): array
     {
         return [
+            'email' => 'e-mail',
             'firstName' => 'prénom',
             'lastName' => 'nom',
             'line1' => 'adresse',
@@ -181,6 +231,12 @@ final class CheckoutPage extends Component
         ];
     }
 
+    /** The method the customer picked, if it is still offered. */
+    private function selectedShippingMethod(): ?ShippingMethod
+    {
+        return $this->shippingMethodId === null ? null : ShippingMethod::query()->active()->find($this->shippingMethodId);
+    }
+
     private function fillFrom(Address $address): void
     {
         $this->savedAddressId = $address->id;
@@ -195,14 +251,14 @@ final class CheckoutPage extends Component
 
     public function render(CartManager $cart): View
     {
-        /** @var User $user */
         $user = auth()->user();
         $items = $cart->items();
 
         return view('livewire.shop.checkout-page', [
             'items' => $items,
-            'totals' => CartTotals::calculate($items, $cart->coupon()),
-            'addresses' => $user->addresses()->get(),
+            'totals' => $cart->totalsFor($items, null, $this->selectedShippingMethod()),
+            'shippingMethods' => ShippingMethod::query()->active()->get(),
+            'addresses' => $user instanceof User ? $user->addresses()->get() : new Collection,
         ]);
     }
 }

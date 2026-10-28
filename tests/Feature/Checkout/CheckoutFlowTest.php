@@ -6,12 +6,66 @@ use App\Cart\CartManager;
 use App\Enums\OrderStatus;
 use App\Livewire\Shop\CheckoutPage;
 use App\Livewire\Shop\CheckoutSuccess;
+use App\Models\Order;
 use App\Models\User;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 
-it('requires authentication to check out', function (): void {
-    $this->get(route('checkout'))->assertRedirect(route('login'));
+it('lets a guest reach the checkout page', function (): void {
+    cartWith();
+
+    $this->get(route('checkout'))->assertOk()->assertSee('Pas besoin de compte');
+});
+
+it('creates and signs in an account for a guest, keeping the cart for the order', function (): void {
+    Notification::fake();
+    fakeGateway();
+    cartWith();
+
+    Livewire::test(CheckoutPage::class)
+        ->set('email', ' Invite@Example.test ')
+        ->set('firstName', 'Camille')
+        ->set('lastName', 'Martin')
+        ->set('line1', '12 rue des Lilas')
+        ->set('postalCode', '75011')
+        ->set('city', 'Paris')
+        ->set('acceptTerms', true)
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    $user = User::firstWhere('email', 'invite@example.test');
+
+    expect($user)->not->toBeNull()
+        ->and($this->isAuthenticated())->toBeTrue()
+        ->and($user->orders()->sole()->items)->toHaveCount(1)
+        ->and($user->orders()->sole()->stripe_session_id)->not->toBeNull();
+    Notification::assertSentTo($user, ResetPassword::class);
+});
+
+it('asks a guest whose e-mail already has an account to sign in', function (): void {
+    User::factory()->create(['email' => 'client@example.test']);
+    cartWith();
+
+    Livewire::test(CheckoutPage::class)
+        ->set('email', 'client@example.test')
+        ->set('firstName', 'Camille')
+        ->set('lastName', 'Martin')
+        ->set('line1', '12 rue des Lilas')
+        ->set('postalCode', '75011')
+        ->set('city', 'Paris')
+        ->set('acceptTerms', true)
+        ->call('submit')
+        ->assertSet('error', 'Un compte existe déjà avec cet e-mail. Connectez-vous pour continuer votre commande.');
+
+    expect(Order::query()->count())->toBe(0);
+});
+
+it('requires an e-mail from a guest', function (): void {
+    cartWith();
+
+    Livewire::test(CheckoutPage::class)->call('submit')->assertHasErrors(['email']);
 });
 
 it('sends customers with an empty cart back to the cart', function (): void {

@@ -82,6 +82,8 @@ class CatalogSeeder extends Seeder
                 'stock' => 9999,
             ]);
         }
+
+        $this->attachImage($card);
     }
 
     /**

@@ -14,17 +14,22 @@ final readonly class RefundOrder
     public function __construct(private CheckoutGateway $gateway, private MarkOrderRefunded $markOrderRefunded) {}
 
     /**
-     * Refund a paid order in full through the payment provider.
+     * Refund a paid order in full: the card payment through the provider, the gift card part
+     * back onto the card it came from. An order settled entirely by gift card has no payment.
      *
      * @throws LogicException when the order has no payment to refund
      */
     public function __invoke(Order $order): void
     {
-        if (! $order->status->canTransitionTo(OrderStatus::Refunded) || $order->stripe_payment_intent === null) {
+        $paidByCard = $order->amountDue() > 0;
+
+        if (! $order->status->canTransitionTo(OrderStatus::Refunded) || $order->refunded_total > 0 || ($paidByCard && $order->stripe_payment_intent === null)) {
             throw new LogicException("Order {$order->number} cannot be refunded.");
         }
 
-        $this->gateway->refund($order->stripe_payment_intent);
+        if ($paidByCard) {
+            $this->gateway->refund($order->stripe_payment_intent);
+        }
 
         ($this->markOrderRefunded)($order);
     }

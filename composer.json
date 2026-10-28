@@ -1,10 +1,10 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "sycatle/4shion",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "Online store of the 4shion clothing label.",
+    "keywords": ["laravel", "e-commerce", "livewire", "filament", "stripe"],
+    "license": "proprietary",
     "require": {
         "php": "^8.5.12",
         "barryvdh/laravel-dompdf": "^3.1",

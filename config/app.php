@@ -82,7 +82,11 @@ return [
 
     'locale' => env('APP_LOCALE', 'en'),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    // French is the language the storefront copy is written in: its strings are their own keys,
+    // so a missing English translation falls back to the French original.
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'fr'),
+
+    'supported_locales' => ['fr' => 'Français', 'en' => 'English'],
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 

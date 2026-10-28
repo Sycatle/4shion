@@ -66,6 +66,36 @@ return [
         ],
     ],
 
+    /*
+    | Abandoned cart reminder: sent once, after `after_hours` of inactivity and no later than
+    | `max_days`. `coupon` is an optional code quoted in the e-mail.
+    */
+    'abandoned_cart' => [
+        'after_hours' => 24,
+        'max_days' => 7,
+        'coupon' => env('ABANDONED_CART_COUPON'),
+    ],
+
+    /*
+    | Customers can request a return within this many days of receiving the parcel. The legal
+    | withdrawal right is 14 days; the shop grants more.
+    */
+    'returns' => [
+        'window_days' => 30,
+    ],
+
+    /*
+    | Staff must set up an authenticator app (TOTP) to use the back-office.
+    */
+    'admin_mfa_required' => filter_var(env('ADMIN_MFA_REQUIRED', true), FILTER_VALIDATE_BOOL),
+
+    /*
+    | Payment methods offered on the Stripe payment page, comma-separated (e.g. "card,paypal,klarna").
+    | Empty: Stripe shows every method enabled in the dashboard, which adds Apple Pay / Google Pay
+    | to cards automatically.
+    */
+    'payment_methods' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('STRIPE_PAYMENT_METHODS', ''))))),
+
     'low_stock_threshold' => 3,
 
     'per_page' => 12,

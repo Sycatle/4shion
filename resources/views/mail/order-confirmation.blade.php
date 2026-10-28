@@ -14,10 +14,18 @@ Nous avons bien reçu votre paiement pour la commande **{{ $order->number }}**. 
 
 Sous-total : {{ Money::format($order->subtotal) }}
 @if ($order->discount_total > 0)
-<br>Remise{{ $order->coupon_code ? " ({$order->coupon_code})" : '' }} : −{{ Money::format($order->discount_total) }}
+<br>{{ $order->discountLabel() }} : −{{ Money::format($order->discount_total) }}
 @endif
 <br>Livraison : {{ $order->shipping_total > 0 ? Money::format($order->shipping_total) : 'Offerte' }}
 <br>**Total TTC : {{ Money::format($order->total) }}**
+@if ($order->gift_card_total > 0)
+<br>Carte cadeau : −{{ Money::format($order->gift_card_total) }}
+<br>**Payé par carte : {{ Money::format($order->amountDue()) }}**
+@endif
+@if ($order->hasBackorders())
+
+Certains articles sont en précommande : ils vous seront expédiés dès leur réception, nous vous préviendrons.
+@endif
 
 **Adresse de livraison**<br>
 {{ $order->shipping_address->fullName() }}<br>

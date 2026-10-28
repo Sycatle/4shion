@@ -56,10 +56,10 @@ final class ProcessStripeEvent implements ShouldQueue
 
         $amount = $this->object['amount_total'] ?? null;
 
-        if ($amount !== $order->total) {
+        if ($amount !== $order->amountDue()) {
             Log::error('Stripe amount does not match the order total.', [
                 'order' => $order->number,
-                'expected' => $order->total,
+                'expected' => $order->amountDue(),
                 'received' => $amount,
             ]);
 

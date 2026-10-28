@@ -24,7 +24,18 @@ class ProductFactory extends Factory
             'base_price' => fake()->numberBetween(2900, 18900),
             'is_active' => true,
             'is_featured' => false,
+            'is_gift_card' => false,
         ];
+    }
+
+    public function onSale(int $percent = 20): static
+    {
+        return $this->state(['sale_percent' => $percent]);
+    }
+
+    public function giftCard(): static
+    {
+        return $this->state(['is_gift_card' => true]);
     }
 
     public function inactive(): static

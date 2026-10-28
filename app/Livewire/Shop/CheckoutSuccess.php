@@ -43,7 +43,7 @@ final class CheckoutSuccess extends Component
             try {
                 $session = $gateway->retrieveSession($this->sessionId);
 
-                if ($session->paid && $session->amountTotal === $this->order->total) {
+                if ($session->paid && $session->amountTotal === $this->order->amountDue()) {
                     $markOrderPaid($this->order, $session->paymentIntent);
                 }
             } catch (Throwable $e) {

@@ -37,6 +37,51 @@ class CatalogSeeder extends Seeder
                 $this->createProduct($category, $productData, $categoryData['sizes'] ?? self::CLOTHING_SIZES);
             }
         }
+
+        $this->seedDemoStockAndPricing();
+    }
+
+    private function seedDemoStockAndPricing(): void
+    {
+        Product::query()->where('slug', 'sweat-quartz')->update([
+            'sale_percent' => 25,
+            'sale_ends_at' => now()->addWeeks(2),
+        ]);
+
+        ProductVariant::query()
+            ->whereRelation('product', 'slug', 'bomber-helix')
+            ->where('color', 'Noir')
+            ->where('size', 'M')
+            ->update(['stock' => 0, 'preorder_enabled' => true, 'preorder_available_on' => now()->addWeeks(3), 'preorder_limit' => 20]);
+
+        ProductVariant::query()
+            ->whereRelation('product', 'slug', 'hoodie-atlas')
+            ->where('color', 'Noir')
+            ->where('size', 'L')
+            ->update(['stock' => 0]);
+
+        $accessories = Category::query()->where('slug', 'accessoires')->firstOrFail();
+        $card = Product::create([
+            'category_id' => $accessories->id,
+            'name' => 'Carte cadeau 4shion',
+            'slug' => 'carte-cadeau',
+            'description' => 'Offrez le choix : le code est envoyé par e-mail dès le paiement, valable 12 mois et utilisable en plusieurs fois.',
+            'base_price' => 5000,
+            'is_active' => true,
+            'is_gift_card' => true,
+        ]);
+
+        foreach ([2500, 5000, 10000] as $amount) {
+            ProductVariant::create([
+                'product_id' => $card->id,
+                'sku' => "4SH-GIFT-{$amount}",
+                'size' => ($amount / 100).' €',
+                'color' => 'Écru',
+                'color_hex' => self::COLORS['Écru'],
+                'price_override' => $amount,
+                'stock' => 9999,
+            ]);
+        }
     }
 
     /**

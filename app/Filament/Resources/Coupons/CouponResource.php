@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Coupons;
 
 use App\Enums\DiscountType;
+use App\Filament\Concerns\RestrictedByRole;
 use App\Filament\Resources\Coupons\Pages\ManageCoupons;
 use App\Models\Coupon;
 use BackedEnum;
@@ -25,6 +26,13 @@ use Override;
 
 final class CouponResource extends Resource
 {
+    use RestrictedByRole;
+
+    protected static function area(): string
+    {
+        return 'marketing';
+    }
+
     #[Override]
     protected static ?string $model = Coupon::class;
 
@@ -61,7 +69,10 @@ final class CouponResource extends Resource
                     ->default(DiscountType::Percent->value),
                 TextInput::make('value')
                     ->label('Valeur')
-                    ->required()
+                    ->required(fn (Get $get): bool => $get('type') !== DiscountType::FreeShipping->value)
+                    ->hidden(fn (Get $get): bool => $get('type') === DiscountType::FreeShipping->value)
+                    ->dehydratedWhenHidden()
+                    ->default(0)
                     ->numeric()
                     ->minValue(1)
                     ->maxValue(fn (Get $get): ?int => $get('type') === DiscountType::Percent->value ? 100 : null)
@@ -80,6 +91,21 @@ final class CouponResource extends Resource
                     ->numeric()
                     ->integer()
                     ->minValue(1),
+                TextInput::make('max_uses_per_user')
+                    ->label('Utilisations par client')
+                    ->numeric()
+                    ->integer()
+                    ->minValue(1),
+                Select::make('categories')
+                    ->label('Catégories concernées')
+                    ->helperText('Laisser vide pour toute la boutique.')
+                    ->relationship('categories', 'name')
+                    ->multiple()
+                    ->preload(),
+                Toggle::make('first_order_only')
+                    ->label('Première commande uniquement'),
+                Toggle::make('excludes_sale_items')
+                    ->label('Exclure les articles soldés'),
                 DateTimePicker::make('starts_at')
                     ->label('Début'),
                 DateTimePicker::make('expires_at')
@@ -100,9 +126,11 @@ final class CouponResource extends Resource
                     ->copyable(),
                 TextColumn::make('type')
                     ->label('Remise')
-                    ->formatStateUsing(fn (Coupon $record): string => $record->type === DiscountType::Percent
-                        ? "{$record->value} %"
-                        : number_format($record->value / 100, 2, ',', ' ').' €'),
+                    ->formatStateUsing(fn (Coupon $record): string => match ($record->type) {
+                        DiscountType::Percent => "{$record->value} %",
+                        DiscountType::Fixed => number_format($record->value / 100, 2, ',', ' ').' €',
+                        DiscountType::FreeShipping => 'Livraison offerte',
+                    }),
                 TextColumn::make('used_count')
                     ->label('Utilisations')
                     ->formatStateUsing(fn (Coupon $record): string => $record->max_uses ? "{$record->used_count} / {$record->max_uses}" : (string) $record->used_count),

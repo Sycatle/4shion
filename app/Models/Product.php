@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsActivity;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\RouteKey;
@@ -23,12 +24,15 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  *
  * @property-read Category $category
  */
-#[Fillable(['category_id', 'name', 'slug', 'description', 'specs', 'base_price', 'is_active', 'is_featured'])]
+#[Fillable([
+    'category_id', 'name', 'slug', 'description', 'specs', 'base_price', 'is_active', 'is_featured', 'is_gift_card',
+    'sale_percent', 'sale_starts_at', 'sale_ends_at',
+])]
 #[RouteKey('slug')]
 class Product extends Model implements HasMedia
 {
     /** @use HasFactory<ProductFactory> */
-    use HasFactory, InteractsWithMedia, Searchable;
+    use HasFactory, InteractsWithMedia, LogsActivity, Searchable;
 
     public const IMAGES = 'images';
 
@@ -39,7 +43,34 @@ class Product extends Model implements HasMedia
             'base_price' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'is_gift_card' => 'boolean',
+            'sale_percent' => 'integer',
+            'sale_starts_at' => 'datetime',
+            'sale_ends_at' => 'datetime',
         ];
+    }
+
+    /** Percentage off while a sale is running, null otherwise. */
+    public function activeSalePercent(): ?int
+    {
+        if ($this->sale_percent === null || $this->sale_starts_at?->isFuture() || $this->sale_ends_at?->isPast()) {
+            return null;
+        }
+
+        return $this->sale_percent;
+    }
+
+    /** Price after the running sale, in cents. */
+    public function salePriceOf(int $regularPrice): int
+    {
+        $percent = $this->activeSalePercent();
+
+        return $percent === null ? $regularPrice : (int) round($regularPrice * (100 - $percent) / 100);
+    }
+
+    public function price(): int
+    {
+        return $this->salePriceOf($this->base_price);
     }
 
     /** @return array<string, string> label => value, only the specs that are filled in */
@@ -127,6 +158,22 @@ class Product extends Model implements HasMedia
     protected function active(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Adds `reviews_avg_rating` and `reviews_count` over published reviews, for product cards.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    #[Scope]
+    protected function withRating(Builder $query): Builder
+    {
+        $published = fn (Builder $reviews): Builder => $reviews->whereNotNull('approved_at');
+
+        return $query
+            ->withAvg(['reviews' => $published], 'rating')
+            ->withCount(['reviews' => $published]);
     }
 
     public function imageUrl(string $conversion = 'card'): ?string

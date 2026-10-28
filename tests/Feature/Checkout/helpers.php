@@ -37,5 +37,5 @@ function pendingOrder(User $user, int $quantity = 1): Order
 {
     cartWith(quantity: $quantity);
 
-    return (new CreateOrder(app(CartManager::class)))($user, address());
+    return app(CreateOrder::class)($user, address());
 }

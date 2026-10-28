@@ -71,7 +71,7 @@ it('marks an order as paid only once', function (): void {
     $coupon = Coupon::factory()->create(['code' => 'BIENVENUE10']);
     cartWith(price: 10000);
     app(CartManager::class)->applyCoupon('BIENVENUE10');
-    $order = (new CreateOrder(app(CartManager::class)))($user, address());
+    $order = app(CreateOrder::class)($user, address());
 
     $first = app(MarkOrderPaid::class)($order, 'pi_123');
     $second = app(MarkOrderPaid::class)($order, 'pi_123');

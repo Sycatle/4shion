@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Shop;
 
 use App\Cart\CartManager;
-use App\Cart\CartTotals;
 use App\Exceptions\Cart\CartException;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
@@ -61,7 +60,7 @@ final class CartDrawer extends Component
 
         return view('livewire.shop.cart-drawer', [
             'items' => $items,
-            'totals' => CartTotals::calculate($items, $cart->coupon()),
+            'totals' => $cart->totalsFor($items),
         ]);
     }
 }

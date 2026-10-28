@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -71,6 +72,27 @@ final class ProductForm
                             ->default(true),
                         Toggle::make('is_featured')
                             ->label('Mis en avant sur l\'accueil'),
+                        Toggle::make('is_gift_card')
+                            ->label('Carte cadeau')
+                            ->helperText('Sans stock ni livraison : un code est envoyé par e-mail après paiement. Le prix de chaque variante est le montant de la carte.'),
+                    ]),
+                Section::make('Soldes')
+                    ->description('Prix barré automatique sur toutes les variantes, pendant la période choisie.')
+                    ->columns(3)
+                    ->columnSpan(2)
+                    ->components([
+                        TextInput::make('sale_percent')
+                            ->label('Remise')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(1)
+                            ->maxValue(90)
+                            ->suffix('%'),
+                        DateTimePicker::make('sale_starts_at')
+                            ->label('Début'),
+                        DateTimePicker::make('sale_ends_at')
+                            ->label('Fin')
+                            ->after('sale_starts_at'),
                     ]),
                 Section::make('Visuels')
                     ->columnSpanFull()

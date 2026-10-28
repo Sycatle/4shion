@@ -6,6 +6,7 @@ namespace App\Payments;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Config;
 use Laravel\Cashier\Cashier;
 use Stripe\Checkout\Session;
 use Stripe\StripeClient;
@@ -42,12 +43,21 @@ final class StripeCheckoutGateway implements CheckoutGateway
             ])->all(),
         ];
 
-        if ($order->discount_total > 0) {
+        $methods = array_values(array_filter(Config::array('shop.payment_methods'), is_string(...)));
+
+        if ($methods !== []) {
+            $data['payment_method_types'] = $methods;
+        }
+
+        // Stripe accepts one discount per session: the cart discount and the gift card share it.
+        $amountOff = $order->discount_total + $order->gift_card_total;
+
+        if ($amountOff > 0) {
             $coupon = $stripe->coupons->create([
-                'amount_off' => $order->discount_total,
+                'amount_off' => $amountOff,
                 'currency' => $currency,
                 'duration' => 'once',
-                'name' => $order->coupon_code ?? 'Réduction',
+                'name' => $order->discount_total > 0 ? $order->discountLabel() : 'Carte cadeau',
             ], ['idempotency_key' => "order-{$order->id}-coupon"]);
 
             $data['discounts'] = [['coupon' => $coupon->id]];
@@ -57,7 +67,7 @@ final class StripeCheckoutGateway implements CheckoutGateway
             $data['shipping_options'] = [[
                 'shipping_rate_data' => [
                     'type' => 'fixed_amount',
-                    'display_name' => 'Livraison standard',
+                    'display_name' => $order->shipping_method_name ?? 'Livraison standard',
                     'fixed_amount' => ['amount' => $order->shipping_total, 'currency' => $currency],
                 ],
             ]];
@@ -78,11 +88,11 @@ final class StripeCheckoutGateway implements CheckoutGateway
         $this->client()->checkout->sessions->expire($sessionId);
     }
 
-    public function refund(string $paymentIntent): void
+    public function refund(string $paymentIntent, ?int $amount = null, ?string $idempotencyKey = null): void
     {
         $this->client()->refunds->create(
-            ['payment_intent' => $paymentIntent],
-            ['idempotency_key' => "refund-{$paymentIntent}"],
+            ['payment_intent' => $paymentIntent] + ($amount !== null ? ['amount' => $amount] : []),
+            ['idempotency_key' => $idempotencyKey ?? "refund-{$paymentIntent}"],
         );
     }
 

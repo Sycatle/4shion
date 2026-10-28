@@ -67,7 +67,9 @@
                 @if ($error)
                     <p class="text-sm text-red-700" role="alert">{{ $error }}</p>
                 @endif
-                <x-shop.shipping-progress :totals="$totals" />
+                @unless ($totals->giftCardsOnly)
+                    <x-shop.shipping-progress :totals="$totals" />
+                @endunless
                 <div class="flex items-baseline justify-between">
                     <span class="text-sm text-muted">Sous-total</span>
                     <span class="font-display text-xl font-bold">{{ \App\Support\Money::format($totals->subtotal - $totals->discount) }}</span>

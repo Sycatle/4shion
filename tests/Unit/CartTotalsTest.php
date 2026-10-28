@@ -34,7 +34,7 @@ function inMemoryCoupon(DiscountType $type, int $value, ?int $minSubtotal = null
 it('charges flat shipping below the free shipping threshold', function (): void {
     $totals = CartTotals::calculate(cartLines([[4000, 2]]), null);
 
-    expect($totals)->toEqual(new CartTotals(itemCount: 2, subtotal: 8000, discount: 0, shipping: 490, total: 8490));
+    expect($totals)->toEqual(new CartTotals(itemCount: 2, subtotal: 8000, discount: 0, shipping: 490, total: 8490, freeThreshold: 10000));
 });
 
 it('ships for free from the threshold', function (): void {
@@ -64,5 +64,5 @@ it('ignores a coupon whose minimum is not reached', function (): void {
 
 it('returns zeros for an empty cart', function (): void {
     expect(CartTotals::calculate(new Collection, null))
-        ->toEqual(new CartTotals(itemCount: 0, subtotal: 0, discount: 0, shipping: 0, total: 0));
+        ->toEqual(new CartTotals(itemCount: 0, subtotal: 0, discount: 0, shipping: 0, total: 0, freeThreshold: 10000));
 });

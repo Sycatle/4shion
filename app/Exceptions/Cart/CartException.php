@@ -18,6 +18,16 @@ final class CartException extends RuntimeException
             : 'Cet article est actuellement épuisé.');
     }
 
+    public static function lineLimit(int $max): self
+    {
+        return new self("Vous pouvez commander au maximum {$max} exemplaires d'un même article.");
+    }
+
+    public static function invalidGiftCard(): self
+    {
+        return new self('Cette carte cadeau est invalide, expirée ou épuisée.');
+    }
+
     public static function emptyCart(): self
     {
         return new self('Votre panier est vide.');

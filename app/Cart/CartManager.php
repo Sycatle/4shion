@@ -8,7 +8,10 @@ use App\Exceptions\Cart\CartException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
+use App\Models\GiftCard;
 use App\Models\ProductVariant;
+use App\Models\Promotion;
+use App\Models\ShippingMethod;
 use App\Models\User;
 use App\Support\Money;
 use Illuminate\Contracts\Auth\Guard;
@@ -75,12 +78,34 @@ final class CartManager
 
     public function coupon(): ?Coupon
     {
-        return $this->find()?->coupon;
+        return $this->find()?->coupon?->loadMissing('categories');
+    }
+
+    public function giftCard(): ?GiftCard
+    {
+        return $this->find()?->giftCard;
     }
 
     public function totals(): CartTotals
     {
-        return CartTotals::calculate($this->items(), $this->coupon());
+        return $this->totalsFor($this->items());
+    }
+
+    /**
+     * @param  Collection<int, CartItem>  $items  the cart items, already loaded by the caller
+     */
+    public function totalsFor(Collection $items, ?GiftCard $giftCard = null, ?ShippingMethod $shippingMethod = null): CartTotals
+    {
+        $user = $this->auth->user();
+
+        return CartTotals::calculate(
+            $items,
+            $this->coupon(),
+            Promotion::query()->running()->get(),
+            $giftCard ?? $this->giftCard(),
+            $user instanceof User ? $user : null,
+            $shippingMethod ?? ShippingMethod::default(),
+        );
     }
 
     public function count(): int
@@ -131,9 +156,17 @@ final class CartManager
             throw CartException::invalidCoupon();
         }
 
-        $subtotal = $this->totals()->subtotal;
+        $user = $this->auth->user();
 
-        if (! $coupon->meetsMinimum($subtotal)) {
+        if (($restriction = $coupon->restrictionFor($user instanceof User ? $user : null)) !== null) {
+            throw CartException::invalidCoupon($restriction);
+        }
+
+        $merchandise = $this->items()
+            ->reject(fn (CartItem $item): bool => $item->variant->product->is_gift_card)
+            ->sum(fn (CartItem $item): int => $item->variant->price() * $item->quantity);
+
+        if (! $coupon->meetsMinimum($merchandise)) {
             throw CartException::invalidCoupon(sprintf(
                 'Ce code est valable à partir de %s d\'achats.',
                 Money::format((int) $coupon->min_subtotal),
@@ -149,6 +182,26 @@ final class CartManager
     public function removeCoupon(): void
     {
         $this->find()?->update(['coupon_id' => null]);
+    }
+
+    public function applyGiftCard(string $code): GiftCard
+    {
+        $cart = $this->find();
+        $giftCard = GiftCard::query()->where('code', GiftCard::normalizeCode($code))->first();
+
+        if (! $cart instanceof Cart || $giftCard === null || ! $giftCard->isUsable()) {
+            throw CartException::invalidGiftCard();
+        }
+
+        $cart->update(['gift_card_id' => $giftCard->id]);
+        $cart->setRelation('giftCard', $giftCard);
+
+        return $giftCard;
+    }
+
+    public function removeGiftCard(): void
+    {
+        $this->find()?->update(['gift_card_id' => null]);
     }
 
     public function clear(): void
@@ -183,22 +236,26 @@ final class CartManager
         }
 
         $userCart->coupon_id ??= $guestCart->coupon_id;
+        $userCart->gift_card_id ??= $guestCart->gift_card_id;
         $userCart->save();
 
         $guestCart->delete();
     }
 
     /**
-     * Cap a requested quantity to the line maximum and to the available stock.
+     * Cap a requested quantity to the line maximum and to what can be ordered (stock plus pre-orders).
      *
      * @return int<1, max>
      */
     private function clampedQuantity(ProductVariant $variant, int $requested, bool $fail = true): int
     {
-        $allowed = min(self::MAX_QUANTITY_PER_LINE, $variant->stock);
+        $available = $variant->availableQuantity();
+        $allowed = min(self::MAX_QUANTITY_PER_LINE, $available);
 
         if ($requested > $allowed && $fail) {
-            throw CartException::insufficientStock($variant->stock);
+            throw $available >= self::MAX_QUANTITY_PER_LINE
+                ? CartException::lineLimit(self::MAX_QUANTITY_PER_LINE)
+                : CartException::insufficientStock($available);
         }
 
         return max(1, min($requested, $allowed));

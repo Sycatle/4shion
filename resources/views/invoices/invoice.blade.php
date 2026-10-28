@@ -81,10 +81,14 @@
     <table class="totals">
         <tr><td>Sous-total</td><td class="right">{{ Money::format($order->subtotal) }}</td></tr>
         @if ($order->discount_total > 0)
-            <tr><td>Réduction {{ $order->coupon_code }}</td><td class="right">−{{ Money::format($order->discount_total) }}</td></tr>
+            <tr><td>{{ $order->discountLabel() }}</td><td class="right">−{{ Money::format($order->discount_total) }}</td></tr>
         @endif
         <tr><td>Livraison</td><td class="right">{{ $order->shipping_total === 0 ? 'Offerte' : Money::format($order->shipping_total) }}</td></tr>
         <tr class="grand"><td>Total TTC</td><td class="right">{{ Money::format($order->total) }}</td></tr>
+        @if ($order->gift_card_total > 0)
+            <tr><td>Réglé par carte cadeau</td><td class="right">−{{ Money::format($order->gift_card_total) }}</td></tr>
+            <tr><td>Réglé par carte bancaire</td><td class="right">{{ Money::format($order->amountDue()) }}</td></tr>
+        @endif
         <tr><td class="muted">dont TVA ({{ \Illuminate\Support\Number::format((float) $order->vat_rate, locale: 'fr') }} %)</td><td class="right muted">{{ Money::format($order->vat_total) }}</td></tr>
     </table>
 

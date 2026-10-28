@@ -1,7 +1,7 @@
 @props(['totals'])
 
 @php
-    $threshold = config('shop.shipping.free_threshold');
+    $threshold = $totals->freeThreshold ?: config('shop.shipping.free_threshold');
     $current = $totals->subtotal - $totals->discount;
     $remaining = max(0, $threshold - $current);
     $percent = min(100, (int) round($current / $threshold * 100));
@@ -9,7 +9,7 @@
 
 <div {{ $attributes }}>
     <p class="text-sm">
-        @if ($remaining > 0)
+        @if ($remaining > 0 && $totals->shipping > 0)
             Plus que <strong class="font-semibold">{{ \App\Support\Money::format($remaining) }}</strong> pour la livraison offerte.
         @else
             La livraison est offerte sur cette commande.

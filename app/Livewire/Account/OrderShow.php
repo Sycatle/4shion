@@ -24,7 +24,7 @@ final class OrderShow extends Component
     {
         Gate::authorize('view', $order);
 
-        $this->order = $order->load('items');
+        $this->order = $order->load('items.giftCards', 'shipments', 'returns');
     }
 
     public function pay(CheckoutGateway $gateway): void

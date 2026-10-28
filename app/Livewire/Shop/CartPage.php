@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Shop;
 
 use App\Cart\CartManager;
-use App\Cart\CartTotals;
+use App\Catalog\Recommender;
 use App\Exceptions\Cart\CartException;
 use App\Models\CartItem;
 use Illuminate\Contracts\View\View;
@@ -24,6 +24,10 @@ final class CartPage extends Component
     public string $couponCode = '';
 
     public ?string $couponError = null;
+
+    public string $giftCardCode = '';
+
+    public ?string $giftCardError = null;
 
     public ?string $error = null;
 
@@ -71,6 +75,34 @@ final class CartPage extends Component
         $cart->removeCoupon();
     }
 
+    public function applyGiftCard(CartManager $cart): void
+    {
+        $this->giftCardError = null;
+
+        // Gift card codes are as guessable as coupons: they share the same throttle.
+        $key = 'coupon:'.session()->getId();
+
+        if (RateLimiter::tooManyAttempts($key, self::MAX_COUPON_ATTEMPTS_PER_MINUTE)) {
+            $this->giftCardError = sprintf('Trop de tentatives. Réessayez dans %d secondes.', RateLimiter::availableIn($key));
+
+            return;
+        }
+
+        RateLimiter::hit($key);
+
+        try {
+            $cart->applyGiftCard($this->giftCardCode);
+            $this->giftCardCode = '';
+        } catch (CartException $e) {
+            $this->giftCardError = $e->getMessage();
+        }
+    }
+
+    public function removeGiftCard(CartManager $cart): void
+    {
+        $cart->removeGiftCard();
+    }
+
     private function changeQuantity(CartManager $cart, int $itemId, int $delta): void
     {
         $this->error = null;
@@ -89,16 +121,17 @@ final class CartPage extends Component
         $this->dispatch('cart-updated');
     }
 
-    public function render(CartManager $cart): View
+    public function render(CartManager $cart, Recommender $recommender): View
     {
         /** @var Collection<int, CartItem> $items */
         $items = $cart->items();
-        $coupon = $cart->coupon();
 
         return view('livewire.shop.cart-page', [
             'items' => $items,
-            'coupon' => $coupon,
-            'totals' => CartTotals::calculate($items, $coupon),
+            'suggestions' => $recommender->forCart(array_values($items->map(fn (CartItem $item): int => $item->variant->product_id)->unique()->all())),
+            'coupon' => $cart->coupon(),
+            'giftCard' => $cart->giftCard(),
+            'totals' => $cart->totalsFor($items),
         ]);
     }
 }

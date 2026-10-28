@@ -140,5 +140,11 @@
                 </div>
             </section>
         </div>
+
+        @if ($current?->content)
+            <section class="mt-16 max-w-2xl space-y-4 border-t border-line pt-10 text-sm leading-relaxed text-muted [&_a]:underline [&_h2]:text-2xl [&_h2]:text-ink">
+                {{ new \Illuminate\Support\HtmlString(\Illuminate\Support\Str::markdown($current->content, ['html_input' => 'escape', 'allow_unsafe_links' => false])) }}
+            </section>
+        @endif
     </div>
 </div>

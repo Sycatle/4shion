@@ -1,23 +1,40 @@
 <?php
 
-use App\Livewire\Actions\Logout;
+use App\Actions\Account\DeleteAccount;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Livewire\Volt\Component;
 
 new class extends Component
 {
     public string $password = '';
 
+    public ?string $error = null;
+
     /**
-     * Delete the currently authenticated user.
+     * Erase the currently authenticated user (orders are kept anonymised for accounting).
      */
-    public function deleteUser(Logout $logout): void
+    public function deleteUser(DeleteAccount $deleteAccount): void
     {
+        $this->error = null;
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+
+        try {
+            $deleteAccount($user);
+        } catch (LogicException $e) {
+            $this->error = $e->getMessage();
+
+            return;
+        }
+
+        // Not Logout: signing out re-saves the user (remember token), which would resurrect an erased row.
+        Auth::guard('web')->forgetUser();
+        Session::invalidate();
+        Session::regenerateToken();
 
         $this->redirect('/', navigate: true);
     }
@@ -33,6 +50,12 @@ new class extends Component
             {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
         </p>
     </header>
+
+    <p class="text-sm"><a href="{{ route('account.data.export') }}" class="underline underline-offset-4">Télécharger mes données (JSON)</a></p>
+
+    @if ($error)
+        <p class="border border-ink bg-white px-4 py-3 text-sm" role="alert">{{ $error }}</p>
+    @endif
 
     <x-danger-button
         x-data=""

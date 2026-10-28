@@ -5,10 +5,17 @@
 @endphp
 
 <div class="shell py-8" x-data="{ active: 0 }">
+    <x-seo.json-ld :data="\App\Support\StructuredData::product($product, $this->variants, $this->reviews->count(), $this->averageRating)" />
+    <x-seo.json-ld :data="\App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Accueil', 'url' => route('home')],
+        ['name' => $product->category->name, 'url' => route('shop.category', $product->category->slug)],
+        ['name' => $product->name, 'url' => route('shop.show', $product)],
+    ])" />
+
     <nav class="mb-6 text-sm text-muted" aria-label="Fil d'Ariane">
-        <a href="{{ route('home') }}" wire:navigate class="hover:text-ink hover:underline">Accueil</a>
+        <a href="{{ route('home') }}" wire:navigate class="hover:text-ink hover:underline">{{ __('Accueil') }}</a>
         <span aria-hidden="true">/</span>
-        <a href="{{ route('shop.index', ['category' => $product->category->slug]) }}" wire:navigate class="hover:text-ink hover:underline">{{ $product->category->name }}</a>
+        <a href="{{ route('shop.category', $product->category->slug) }}" wire:navigate class="hover:text-ink hover:underline">{{ $product->category->name }}</a>
         <span aria-hidden="true">/</span>
         <span class="text-ink" aria-current="page">{{ $product->name }}</span>
     </nav>
@@ -39,6 +46,10 @@
 
             <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <p class="font-display text-3xl font-bold">{{ \App\Support\Money::format($this->price) }}</p>
+                @if ($this->price < $this->regularPrice)
+                    <p class="text-lg text-muted line-through">{{ \App\Support\Money::format($this->regularPrice) }}</p>
+                    <p class="bg-ink px-2 py-1 text-xs font-semibold uppercase tracking-wide text-paper">-{{ $product->activeSalePercent() }} %</p>
+                @endif
                 @if ($this->reviews->isNotEmpty())
                     <a href="#avis" class="inline-flex items-center gap-2 text-sm text-muted hover:text-ink">
                         <x-shop.stars :rating="$this->averageRating" />
@@ -50,7 +61,7 @@
             <p class="mt-6 max-w-prose text-base leading-relaxed">{{ $product->description }}</p>
 
             <div class="mt-8">
-                <p class="text-sm font-semibold">Couleur : <span class="font-normal">{{ $color }}</span></p>
+                <p class="text-sm font-semibold">{{ __('Couleur') }} : <span class="font-normal">{{ $color }}</span></p>
                 <div class="mt-3 flex gap-3">
                     @foreach ($this->colors as $name => $hex)
                         <button type="button" wire:click="selectColor('{{ $name }}')" title="{{ $name }}" aria-pressed="{{ $color === $name ? 'true' : 'false' }}"
@@ -64,35 +75,59 @@
 
             <div class="mt-8">
                 <div class="flex items-baseline justify-between">
-                    <p class="text-sm font-semibold">Taille</p>
+                    <p class="text-sm font-semibold">{{ __('Taille') }}</p>
                     @if ($product->category->slug !== 'accessoires')
-                        <button type="button" x-data x-on:click="$dispatch('open-size-guide')" class="text-sm underline underline-offset-4">Guide des tailles</button>
+                        <button type="button" x-data x-on:click="$dispatch('open-size-guide')" class="text-sm underline underline-offset-4">{{ __('Guide des tailles') }}</button>
                     @endif
                 </div>
                 <div class="mt-3 flex flex-wrap gap-2">
                     @foreach ($this->sizesForColor as $sizeName => $variant)
-                        <button type="button" wire:click="selectSize('{{ $sizeName }}')" @disabled(! $variant->isInStock()) aria-pressed="{{ $size === $sizeName ? 'true' : 'false' }}"
+                        <button type="button" wire:click="selectSize('{{ $sizeName }}')" aria-pressed="{{ $size === $sizeName ? 'true' : 'false' }}"
                             @class([
                                 'min-w-14 border px-4 py-3 text-sm',
                                 'border-ink bg-ink text-paper' => $size === $sizeName,
-                                'border-line bg-white hover:border-ink' => $size !== $sizeName && $variant->isInStock(),
-                                'cursor-not-allowed border-line bg-transparent text-muted line-through' => ! $variant->isInStock(),
+                                'border-line bg-white hover:border-ink' => $size !== $sizeName && $variant->canBeOrdered(),
+                                'border-line bg-transparent text-muted line-through hover:border-ink' => $size !== $sizeName && ! $variant->canBeOrdered(),
                             ])>
                             {{ $sizeName }}
                         </button>
                     @endforeach
                 </div>
-                @if ($this->selectedVariant && $this->selectedVariant->stock <= config('shop.low_stock_threshold'))
+                @if ($this->selectedVariant?->isLowStock())
                     <p class="mt-3 text-sm text-muted">Plus que {{ $this->selectedVariant->stock }} en stock.</p>
+                @elseif ($this->selectedVariant?->isPreorderable())
+                    <p class="mt-3 text-sm text-muted">
+                        Précommande{{ $this->selectedVariant->preorder_available_on ? ' : expédition à partir du '.$this->selectedVariant->preorder_available_on->translatedFormat('j F Y') : '' }}.
+                    </p>
                 @endif
             </div>
 
+            @if ($this->selectedVariant && ! $this->selectedVariant->canBeOrdered())
+                <div class="mt-8 border border-line bg-white p-5">
+                    @if ($alertSubscribed)
+                        <p class="text-sm" role="status">C’est noté : nous vous écrirons dès que cet article sera de retour.</p>
+                    @else
+                        <p class="text-sm font-semibold">{{ __('Épuisé en :variant', ['variant' => $this->selectedVariant->label()]) }}</p>
+                        <form wire:submit="subscribeToAlert" class="mt-3 flex gap-2">
+                            <input type="email" wire:model="alertEmail" placeholder="Votre e-mail" class="field" aria-label="E-mail pour l’alerte de retour en stock" required>
+                            <button type="submit" wire:loading.attr="disabled" class="btn-primary shrink-0">{{ __('Me prévenir') }}</button>
+                        </form>
+                        @error('alertEmail')
+                            <p class="mt-2 text-xs text-red-700" role="alert">{{ $message }}</p>
+                        @enderror
+                    @endif
+                </div>
+            @endif
+
             <div class="mt-8 space-y-3">
-                <button type="button" wire:click="addToCart" wire:loading.attr="disabled" class="btn-primary hidden w-full lg:inline-flex">Ajouter au panier</button>
+                <button type="button" wire:click="addToCart" wire:loading.attr="disabled" @disabled($this->selectedVariant && ! $this->selectedVariant->canBeOrdered()) class="btn-primary hidden w-full disabled:cursor-not-allowed disabled:opacity-40 lg:inline-flex">{{ $this->selectedVariant?->isPreorderable() ? __('Précommander') : __('Ajouter au panier') }}</button>
                 @if ($error)
                     <p class="text-sm text-red-700" role="alert">{{ $error }}</p>
                 @endif
-                <p class="text-sm text-muted">Livraison en {{ config('shop.shipping.delay') }}. Retours gratuits sous 30 jours.</p>
+                <button type="button" wire:click="toggleWishlist" class="btn-outline w-full" aria-pressed="{{ $this->inWishlist ? 'true' : 'false' }}">
+                    {{ $this->inWishlist ? __('Retirer de mes favoris') : __('Ajouter à mes favoris') }}
+                </button>
+                <p class="text-sm text-muted">{{ __('Livraison en :delay.', ['delay' => config('shop.shipping.delay')]) }} {{ __('Retours gratuits sous :days jours.', ['days' => config('shop.returns.window_days')]) }}</p>
             </div>
 
             @if ($specs)
@@ -113,7 +148,7 @@
             <p class="truncate text-sm font-semibold">{{ $product->name }}</p>
             <p class="text-sm text-muted">{{ \App\Support\Money::format($this->price) }}@if ($size) · {{ $size }}@endif</p>
         </div>
-        <button type="button" wire:click="addToCart" wire:loading.attr="disabled" class="btn-primary ml-auto shrink-0">Ajouter</button>
+        <button type="button" wire:click="addToCart" wire:loading.attr="disabled" @disabled($this->selectedVariant && ! $this->selectedVariant->canBeOrdered()) class="btn-primary ml-auto shrink-0 disabled:cursor-not-allowed disabled:opacity-40">{{ __('Ajouter') }}</button>
     </div>
 
     @if ($product->category->slug !== 'accessoires')
@@ -154,7 +189,7 @@
 
     <section id="avis" class="mt-24 border-t border-line pt-12 pb-24 lg:pb-0">
         <div class="flex flex-wrap items-baseline gap-4">
-            <h2 class="text-4xl">Avis clients</h2>
+            <h2 class="text-4xl">{{ __('Avis clients') }}</h2>
             @if ($this->reviews->isNotEmpty())
                 <p class="flex items-center gap-2 text-sm text-muted"><x-shop.stars :rating="$this->averageRating" /> {{ number_format($this->averageRating, 1, ',') }} sur 5, {{ $this->reviews->count() }} {{ \Illuminate\Support\Str::plural('avis', $this->reviews->count()) }}</p>
             @endif
@@ -195,10 +230,22 @@
                     <h3 class="mt-2 text-base font-semibold">{{ $review->title }}</h3>
                 @endif
                 <p class="mt-2 text-sm text-muted">{{ $review->body }}</p>
-                <p class="mt-3 text-xs text-muted">{{ $review->user->name }} · {{ $review->created_at->translatedFormat('j F Y') }}</p>
+                <p class="mt-3 text-xs text-muted">{{ $review->user->name }} · Achat vérifié · {{ $review->created_at->translatedFormat('j F Y') }}</p>
+                @if ($review->merchant_reply)
+                    <div class="mt-4 border-l-2 border-ink bg-white p-4 text-sm">
+                        <p class="text-xs font-semibold">Réponse de {{ config('shop.company.name') }}</p>
+                        <p class="mt-1 text-muted">{{ $review->merchant_reply }}</p>
+                    </div>
+                @endif
+                <button type="button" wire:click="voteHelpful({{ $review->id }})" @class(['mt-4 text-xs underline underline-offset-4', 'font-semibold' => in_array($review->id, $this->votedReviewIds, true)]) aria-pressed="{{ in_array($review->id, $this->votedReviewIds, true) ? 'true' : 'false' }}">
+                    Utile{{ $review->helpful_count > 0 ? " ({$review->helpful_count})" : '' }}
+                </button>
             </article>
         @empty
-            <p class="mt-6 text-sm text-muted">Aucun avis pour le moment.</p>
+            <p class="mt-6 text-sm text-muted">{{ __('Aucun avis pour le moment.') }}</p>
         @endforelse
     </section>
+
+    <x-shop.product-row :title="__('Souvent achetés ensemble')" :products="$this->boughtTogether" />
+    <x-shop.product-row :title="__('Récemment consultés')" :products="$this->recentlyViewed" />
 </div>

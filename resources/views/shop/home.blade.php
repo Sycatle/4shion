@@ -1,4 +1,5 @@
 <x-layouts.shop title="Vêtements premium" description="4shion, basiques techniques en matières épaisses : hoodies, t-shirts, vestes, pantalons et accessoires.">
+    <x-seo.json-ld :data="\App\Support\StructuredData::organization()" />
     <section class="grid lg:min-h-[40rem] lg:grid-cols-[5fr_7fr]">
         <div class="relative isolate overflow-hidden bg-concrete">
             <div class="relative z-10 flex h-full flex-col justify-between gap-16 px-5 py-10 sm:px-8 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-12">
@@ -50,7 +51,7 @@
             @foreach ($categories as $category)
                 @php($theme = $category->theme())
                 <li class="w-[72%] shrink-0 snap-start sm:w-[44%] lg:w-auto">
-                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" wire:navigate class="group block" style="background-color: {{ $theme['field'] }}; color: {{ $theme['ink'] }}">
+                    <a href="{{ route('shop.category', $category->slug) }}" wire:navigate class="group block" style="background-color: {{ $theme['field'] }}; color: {{ $theme['ink'] }}">
                         <div class="aspect-[4/5] overflow-hidden">
                             @if ($image = $category->imageUrl())
                                 <img src="{{ $image }}" alt="" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">

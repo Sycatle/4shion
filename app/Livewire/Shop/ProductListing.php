@@ -14,13 +14,14 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * @property-read Collection<int, Category> $categories
+ */
 #[Layout('components.layouts.shop')]
-#[Title('Boutique')]
 final class ProductListing extends Component
 {
     use WithPagination;
@@ -50,6 +51,14 @@ final class ProductListing extends Component
 
     #[Url]
     public string $sort = 'newest';
+
+    public function mount(?string $categorySlug = null): void
+    {
+        if ($categorySlug !== null) {
+            abort_unless(Category::query()->where('slug', $categorySlug)->exists(), 404);
+            $this->category = $categorySlug;
+        }
+    }
 
     public function updated(string $property): void
     {
@@ -117,6 +126,19 @@ final class ProductListing extends Component
 
     public function render(): View
     {
-        return view('livewire.shop.product-listing');
+        /** @var Category|null $current */
+        $current = $this->categories->firstWhere('slug', $this->category);
+        $filtered = trim($this->search) !== '' || $this->sizes || $this->colors || $this->minPrice !== null || $this->maxPrice !== null || $this->sort !== 'newest';
+
+        $default = 'Toute la collection permanente 4shion : hoodies, t-shirts, vestes, pantalons et accessoires.';
+
+        return view('livewire.shop.product-listing')
+            ->title($current instanceof Category ? ($current->meta_title ?? $current->name) : 'Boutique')
+            ->layoutData([
+                'description' => $current instanceof Category ? ($current->meta_description ?? $current->description ?? $default) : $default,
+                'canonical' => $current instanceof Category ? route('shop.category', $current) : route('shop.index'),
+                // Filtered and sorted views duplicate the category page: keep them out of the index.
+                'noindex' => $filtered,
+            ]);
     }
 }

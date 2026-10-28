@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Categories;
 
+use App\Filament\Concerns\ResolvesRecordsByIdOrRouteKey;
+use App\Filament\Concerns\RestrictedByRole;
 use App\Filament\Resources\Categories\Pages\ManageCategories;
 use App\Models\Category;
 use BackedEnum;
@@ -22,6 +24,13 @@ use Override;
 
 final class CategoryResource extends Resource
 {
+    use ResolvesRecordsByIdOrRouteKey, RestrictedByRole;
+
+    protected static function area(): string
+    {
+        return 'products';
+    }
+
     #[Override]
     protected static ?string $model = Category::class;
 
@@ -61,6 +70,18 @@ final class CategoryResource extends Resource
                 Textarea::make('description')
                     ->label('Description')
                     ->columnSpanFull(),
+                Textarea::make('content')
+                    ->label('Contenu éditorial (Markdown)')
+                    ->helperText('Affiché sous la liste des produits : utile pour le référencement.')
+                    ->rows(6)
+                    ->columnSpanFull(),
+                TextInput::make('meta_title')
+                    ->label('Titre SEO')
+                    ->maxLength(255),
+                Textarea::make('meta_description')
+                    ->label('Description SEO')
+                    ->maxLength(320)
+                    ->rows(2),
                 TextInput::make('position')
                     ->label('Position')
                     ->required()

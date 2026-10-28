@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Products;
 
+use App\Filament\Concerns\ResolvesRecordsByIdOrRouteKey;
+use App\Filament\Concerns\RestrictedByRole;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
@@ -20,6 +22,13 @@ use Override;
 
 final class ProductResource extends Resource
 {
+    use ResolvesRecordsByIdOrRouteKey, RestrictedByRole;
+
+    protected static function area(): string
+    {
+        return 'products';
+    }
+
     #[Override]
     protected static ?string $model = Product::class;
 
